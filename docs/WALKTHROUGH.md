@@ -1,35 +1,41 @@
 # Three-minute product walkthrough
 
-## 0:00 — State the decision
+## 0:00 — State the financial decision
 
-Open the reference Pelicans home-game case and St. Tammany Parish. The proposed action is to prepare a bounded campaign test, conditional on validating primary inventory and campaign assumptions. The model shows $1,500 net contribution under the stated inputs. This is a testable scenario, not a measured revenue forecast.
+Open **Decision brief** in the Pelicans edition. The group-ticket planning case shows a $25,000 media budget, $41,250 incremental ticket revenue and $7,550 net incremental contribution. The revenue-to-contribution chart reconciles variable costs, media and other campaign costs.
 
-## 0:30 — Establish the evidence
+The proposed action is to evaluate a bounded pilot. The case is an editable planning example, not a forecast of team revenue. Open **Edit campaign inputs** to show the origin and exact coefficients.
 
-Open Evidence & methods. Census facts, official event metadata, derived comparisons, and assumed campaign inputs have separate labels. Follow the Census link for the selected parish. Explain that population and household income describe residents; they do not identify proven underserved fans.
+## 0:30 — Show what would reverse it
 
-## 1:00 — Reverse the recommendation
+The calculated incrementality reversal is 46.58%, with other inputs fixed. At 40% incrementality, net contribution is −$3,700. Change the incremental share to 40% to reproduce that downside. The threshold does not move because the other coefficients are unchanged.
 
-Open Simulator and lower incrementality from 65% to 40%. Net contribution changes from $1,500 to −$1,500. The recommendation changes to revise before launch. The calculated break-even share remains 52.5%, because all other inputs are unchanged.
+Open **Simulator** to inspect the reversal curve, sensitivity ranking and a pinned comparison. The sensitivity bounds are exploratory inputs, not estimated probabilities or confidence intervals. The model identifies what the pilot needs to learn; it does not establish that the pilot will succeed.
 
-Pin the downside assumptions, then restore incrementality to 65%. The current case improves by $3,000 while the pinned comparison stays at −$1,500. The exported brief retains both input sets and their exact calculated differences.
+## 1:00 — Compare the franchises
 
-Point to the sensitivity ranking. Under the reference scenario's declared exploratory bounds, incrementality produces the largest adverse swing. Under changed assumptions, the ranking can change. This identifies what the test needs to learn, not a probability of success.
+Hover or focus Saints to preview the black and gold edition; select it to keep the edition. The Saints regional ticket case uses its own acquisition cost, incremental share, order size, ticket yield and costs. At the same $25,000 media budget, it calculates $50,000 revenue, $12,500 net contribution and a 34.38% reversal threshold. Its 40% stress remains positive at $4,500.
 
-## 1:40 — Compare regional context
+Switch back to Pelicans. Its edited inputs remain separate. Use **Restore franchise case** in the input drawer to recover the original Pelicans planning inputs.
 
-Return to Overview. Switch between population change, household income, and market footprint. Zoom the map or drag its background; choose a county or labeled city, or use the candidate-market buttons. The shading describes the selected observed Census measure. Choose a different market on the map or in the comparison table. Observe the demographic differences and their source links. The model does not secretly lower acquisition cost in a higher-income market. A market-specific response claim needs campaign evidence.
+## 1:30 — Establish the evidence
 
-## 2:05 — Connect both franchises
+Open **Attendance**. The reviewed snapshot contains 109 New Orleans home-game observations across three seasons per franchise. The current Pelicans series has six home dates and the Saints series four; current seasons are labeled partial. Compare equal counts of home dates rather than partial and full season totals. Inspect the source ledger and correction notes when needed.
 
-Hover or focus Saints in the header to preview the black and gold edition with Saira typography. Select it to keep the edition; the home-game context updates with it. Inspect the current game-context cards and source timestamps. Expand the official home schedules and select a Saints home game. The selected franchise, venue, date, and exported brief update together. The commercial assumptions remain explicit across both franchises.
+Open **Evidence & methods** to distinguish observed public records, explicit transformations and assumed campaign inputs. Published attendance is not unique customers, realized ticket revenue or available inventory.
 
-## 2:30 — Show how the decision becomes measurable
+## 2:00 — Inspect regional context
 
-Open the test plan: confirm inventory and net margin, define eligible audiences, randomize a treatment and holdout, size the experiment using baseline conversion, and measure incremental contribution. Export the JSON brief or use Print / save PDF. The brief retains the scenario, source references, reversal threshold, stress ranges, and measurement plan.
+Open **Markets**. The map uses county boundaries and reviewed Census population/income data. Select a county and inspect its source and vintage. These are resident characteristics, not an estimate of team fans or proven campaign response. Changing the county does not silently change acquisition cost or margin.
 
-Open Metric library and search for a measure. Expand its definition to inspect the source or transformation. Data connections lists the inputs required for attendance, inventory, sales, causal lift, pricing and demand forecasts. None are filled with fabricated zeros.
+Current game context uses attributed third-party scores and official team schedules with timestamps and stale/unavailable states. It is supporting context, not a sales feed.
+
+## 2:30 — Make the case reviewable
+
+Return to **Decision brief** and export JSON/CSV or use Print / save PDF. The financial export retains input assumptions, financial outputs and formulas; the printable brief includes provenance. Open **Metric library** to inspect a measure's definition and required connections.
+
+For a real campaign, first confirm inventory, contribution margins and eligible audiences. Use a treatment/holdout design to measure incremental orders and contribution. The key outcome is whether measured incrementality clears the economic threshold with adequate uncertainty control, not whether attributed orders look large.
 
 ## Technical follow-up
 
-The same TypeScript financial implementation drives the web interface, exported brief, and scenario/curve CSVs. Python and SQL validate the public-data snapshot. Power BI report source is generated and schema-checked; Desktop execution and rendering remain a separate verification step. Automated tests cover threshold equality and sign changes, invalid inputs, missing provenance, franchise identity, and public-feed normalization.
+The browser and scenario/curve exporter use the same TypeScript financial engine. Python and SQL validate the public-data snapshots. Report/model definitions are generated as Power BI project source and schema-checked. Native opening, refresh, DAX execution and rendering still require the Windows acceptance pass. There is no trained ML forecasting model in this release.

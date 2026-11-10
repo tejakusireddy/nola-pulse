@@ -1,6 +1,6 @@
 # Attendance evidence
 
-The performance overview is based on 109 completed regular-season New Orleans home games across six franchise-season snapshots, retrieved November 10, 2026. It does not estimate commercial return from attendance.
+The attendance view is based on 109 completed regular-season New Orleans home games across six franchise-season snapshots, retrieved November 10, 2026. It does not estimate commercial return from attendance.
 
 | Franchise | Season | Home dates | Reported attendance | Average, rounded |
 | --- | --- | ---: | ---: | ---: |
@@ -34,7 +34,7 @@ For a selected season, let N be the smaller number of available home games in th
 
 The current Pelicans comparison uses six games per season: 16,502.67 versus 17,179.33, or −3.93884%. The Saints use four per season: 70,050.25 versus 70,033.50, or +0.023917%. These are descriptive changes with equal game counts. Opponent strength, calendar placement, ticket policy and other causes are not controlled. A partial season's total is never presented as a year-over-year decline against a full-season total.
 
-The chart aligns completed home-game number, not calendar date, and labels its nonzero attendance-axis baseline. The three-season table labels the current season as partial. Weekday/weekend groups use America/Chicago local dates and display sample sizes. Opponent history is an average of matching home observations across the reviewed interval, not a forecast or willingness-to-pay estimate.
+The chart aligns completed home-game number, not calendar date, and labels its nonzero attendance-axis baseline. The season selector labels the current season as partial. Weekday/weekend groups use America/Chicago local dates and display sample sizes. Opponent history is an average of matching home observations across the reviewed interval, not a forecast or willingness-to-pay estimate.
 
 Attendance can count the same person at multiple games. Published figures are not gate scans, unique customers, realized revenue, inventory, or a causal campaign outcome. The separate official Saints single-game observation is explicitly labeled paid attendance; the multi-season provider series retains the broader reported-attendance definition.
 

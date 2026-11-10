@@ -30,7 +30,7 @@ All six inputs are explicit assumptions. No observed response curve supports ext
 
 A scenario is positive above its calculated threshold, neutral at equality, and negative below it. Thresholds above one remain visible as infeasible. Zero activity or zero contribution produces an unavailable threshold. Calculations use unrounded numbers with a small numerical tolerance for equality. UI currency and percentages are rounded for display.
 
-The reference assumptions are B=6000, C=32, i=0.65, T=2, M=32, F=300. They yield $1,500 contribution and a 52.5% reversal threshold. Setting i to 0.40 yields −$1,500. These are demonstrations of the model, not team performance claims.
+The product starts with separate authored franchise planning cases. Pelicans uses B=25000, C=40, i=0.60, T=2, M=45, F=1200; Saints uses B=25000, C=75, i=0.50, T=2.4, M=100, F=2500. These calculate $7,550 and $12,500 net contribution respectively. Ticket yield and variable costs are recorded separately in the financial extension. [Financial model](FINANCIAL-MODEL.md) gives the complete input/output table. The former $1,500 reference remains only as a mathematical test fixture.
 
 Sensitivity evaluates declared exploratory bounds: incrementality 0.30–0.85, acquisition cost $24–$50, contribution $24–$45, and tickets/order 1.5–3. Rank by adverse contribution swing from the current scenario. These bounds are not empirical estimates or confidence intervals. Combined stress uses the more adverse of each declared bound and the current value; dependency probabilities are not estimated. The only financial alternative evaluated is no campaign; no claim of an optimal allocation among markets is made.
 

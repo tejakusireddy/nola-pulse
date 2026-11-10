@@ -1,6 +1,6 @@
 # Power BI project
 
-`NolaPulse.pbip` opens a source-controlled semantic model and two report pages with sixteen visuals. The attendance page includes franchise and season selectors, source scope, reported attendance total and average, completed home-game count, game-number trend, and source ledger. The opening planning page includes: a scenario selector, decision, net contribution, reversal threshold, campaign costs, reversal curve, regional comparison table, and assumption table.
+`NolaPulse.pbip` opens a source-controlled semantic model and two report pages with sixteen visuals. The attendance page includes franchise and season selectors, source scope, reported attendance total and average, completed home-game count, game-number trend, and source ledger. The opening planning page includes: a scenario selector, incremental ticket revenue, net contribution, reversal threshold, campaign costs, reversal curve, and assumption table.
 
 **Verification status:** report definitions are generated against Microsoft's published PBIR schemas. Power BI Desktop opening, DAX execution, and visual rendering still require a Windows verification pass. Do not present this as a Desktop-validated PBIX.
 
