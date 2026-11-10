@@ -34,6 +34,7 @@ def package(destination):
     for path in sorted((ROOT / 'web/public/fonts').iterdir()):
         if path.suffix in ['.ttf', '.txt']:
             files[f'fonts/{path.name}'] = path.read_bytes()
+    files['campaign-plans.json'] = (ROOT / 'web/data/campaign-plans.json').read_bytes()
     files['public-observations.json'] = (ROOT / 'web/data/franchise-evidence.json').read_bytes()
     files['START-HERE.md'] = (ROOT / 'powerbi/WINDOWS-CHECK.md').read_bytes()
     manifest = {name: hashlib.sha256(content).hexdigest() for name, content in sorted(files.items())}

@@ -314,6 +314,12 @@
             "summarizeBy": "none"
           },
           {
+            "name": "franchise",
+            "dataType": "string",
+            "sourceColumn": "franchise",
+            "summarizeBy": "none"
+          },
+          {
             "name": "budget",
             "dataType": "double",
             "sourceColumn": "budget",
@@ -323,6 +329,12 @@
             "name": "costPerOrder",
             "dataType": "double",
             "sourceColumn": "costPerOrder",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "incrementality",
+            "dataType": "double",
+            "sourceColumn": "incrementality",
             "summarizeBy": "none"
           },
           {
@@ -338,15 +350,15 @@
             "summarizeBy": "none"
           },
           {
-            "name": "incrementality",
-            "dataType": "double",
-            "sourceColumn": "incrementality",
-            "summarizeBy": "none"
-          },
-          {
             "name": "fixedCosts",
             "dataType": "double",
             "sourceColumn": "fixedCosts",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ticketPrice",
+            "dataType": "double",
+            "sourceColumn": "ticketPrice",
             "summarizeBy": "none"
           },
           {
@@ -426,6 +438,30 @@
             "dataType": "string",
             "sourceColumn": "status",
             "summarizeBy": "none"
+          },
+          {
+            "name": "incrementalTicketRevenue",
+            "dataType": "double",
+            "sourceColumn": "incrementalTicketRevenue",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "variableCosts",
+            "dataType": "double",
+            "sourceColumn": "variableCosts",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "totalCashCosts",
+            "dataType": "double",
+            "sourceColumn": "totalCashCosts",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "contributionROI",
+            "dataType": "double",
+            "sourceColumn": "contributionROI",
+            "summarizeBy": "none"
           }
         ],
         "partitions": [
@@ -438,7 +474,7 @@
                 "let",
                 "    Source = Csv.Document(File.Contents(DataFolder & \"scenarios.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
                 "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
-                "    Typed = Table.TransformColumnTypes(Headers, {{\"scenario_id\", type text}, {\"label\", type text}, {\"budget\", type number}, {\"costPerOrder\", type number}, {\"ticketsPerOrder\", type number}, {\"contributionPerTicket\", type number}, {\"incrementality\", type number}, {\"fixedCosts\", type number}, {\"attributedOrders\", type number}, {\"incrementalOrders\", type number}, {\"incrementalTickets\", type number}, {\"grossContribution\", type number}, {\"totalCosts\", type number}, {\"netContribution\", type number}, {\"breakEvenShare\", type number}, {\"breakEvenOrders\", type number}, {\"maxCostPerOrder\", type number}, {\"minContributionPerTicket\", type number}, {\"marginOfSafety\", type number}, {\"feasible\", type logical}, {\"status\", type text}}, \"en-US\")",
+                "    Typed = Table.TransformColumnTypes(Headers, {{\"scenario_id\", type text}, {\"label\", type text}, {\"franchise\", type text}, {\"budget\", type number}, {\"costPerOrder\", type number}, {\"incrementality\", type number}, {\"ticketsPerOrder\", type number}, {\"contributionPerTicket\", type number}, {\"fixedCosts\", type number}, {\"ticketPrice\", type number}, {\"attributedOrders\", type number}, {\"incrementalOrders\", type number}, {\"incrementalTickets\", type number}, {\"grossContribution\", type number}, {\"totalCosts\", type number}, {\"netContribution\", type number}, {\"breakEvenShare\", type number}, {\"breakEvenOrders\", type number}, {\"maxCostPerOrder\", type number}, {\"minContributionPerTicket\", type number}, {\"marginOfSafety\", type number}, {\"feasible\", type logical}, {\"status\", type text}, {\"incrementalTicketRevenue\", type number}, {\"variableCosts\", type number}, {\"totalCashCosts\", type number}, {\"contributionROI\", type number}}, \"en-US\")",
                 "in",
                 "    Typed"
               ]
@@ -465,6 +501,21 @@
             "name": "Campaign Costs",
             "expression": "SELECTEDVALUE(Scenarios[budget]) + SELECTEDVALUE(Scenarios[fixedCosts])",
             "formatString": "$#,0;($#,0);$0"
+          },
+          {
+            "name": "Incremental Ticket Revenue",
+            "expression": "[Incremental Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * SELECTEDVALUE(Scenarios[ticketPrice])",
+            "formatString": "$#,0;($#,0);$0"
+          },
+          {
+            "name": "Variable Ticket Costs",
+            "expression": "[Incremental Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * (SELECTEDVALUE(Scenarios[ticketPrice]) - SELECTEDVALUE(Scenarios[contributionPerTicket]))",
+            "formatString": "$#,0;($#,0);$0"
+          },
+          {
+            "name": "Contribution ROI",
+            "expression": "DIVIDE([Net Contribution], [Campaign Costs])",
+            "formatString": "0.0%"
           },
           {
             "name": "Net Contribution",

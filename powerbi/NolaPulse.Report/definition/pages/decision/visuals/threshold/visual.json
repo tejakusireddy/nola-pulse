@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
   "name": "threshold",
   "position": {
-    "x": 445,
+    "x": 645,
     "y": 130,
-    "width": 390,
+    "width": 290,
     "height": 110,
-    "z": 575,
-    "tabOrder": 575
+    "z": 775,
+    "tabOrder": 775
   },
   "visual": {
     "visualType": "card",

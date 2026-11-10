@@ -10,6 +10,15 @@ Incremental Orders =
 Campaign Costs =
 SELECTEDVALUE(Scenarios[budget]) + SELECTEDVALUE(Scenarios[fixedCosts])
 
+Incremental Ticket Revenue =
+[Incremental Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * SELECTEDVALUE(Scenarios[ticketPrice])
+
+Variable Ticket Costs =
+[Incremental Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * (SELECTEDVALUE(Scenarios[ticketPrice]) - SELECTEDVALUE(Scenarios[contributionPerTicket]))
+
+Contribution ROI =
+DIVIDE([Net Contribution], [Campaign Costs])
+
 Net Contribution =
 [Incremental Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * SELECTEDVALUE(Scenarios[contributionPerTicket]) - [Campaign Costs]
 

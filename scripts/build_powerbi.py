@@ -24,6 +24,9 @@ def build():
         ('Attributed Orders', 'DIVIDE(SELECTEDVALUE(Scenarios[budget]), SELECTEDVALUE(Scenarios[costPerOrder]))', '#,0.0'),
         ('Incremental Orders', '[Attributed Orders] * SELECTEDVALUE(Scenarios[incrementality])', '#,0.0'),
         ('Campaign Costs', 'SELECTEDVALUE(Scenarios[budget]) + SELECTEDVALUE(Scenarios[fixedCosts])', '$#,0;($#,0);$0'),
+        ('Incremental Ticket Revenue', '[Incremental Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * SELECTEDVALUE(Scenarios[ticketPrice])', '$#,0;($#,0);$0'),
+        ('Variable Ticket Costs', '[Incremental Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * (SELECTEDVALUE(Scenarios[ticketPrice]) - SELECTEDVALUE(Scenarios[contributionPerTicket]))', '$#,0;($#,0);$0'),
+        ('Contribution ROI', 'DIVIDE([Net Contribution], [Campaign Costs])', '0.0%'),
         ('Net Contribution', '[Incremental Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * SELECTEDVALUE(Scenarios[contributionPerTicket]) - [Campaign Costs]', '$#,0;($#,0);$0'),
         ('Break-even Share', 'DIVIDE([Campaign Costs], [Attributed Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * SELECTEDVALUE(Scenarios[contributionPerTicket]))', '0.0%'),
         ('Decision', 'IF(NOT HASONEVALUE(Scenarios[scenario_id]), "Select one scenario", IF(SELECTEDVALUE(Scenarios[budget]) = 0, "No active campaign", IF(ABS([Net Contribution]) < 0.000001, "Break-even", IF([Net Contribution] > 0, "Conditional test", "Revise before launch"))))', ''),
@@ -70,7 +73,7 @@ def build():
     save(definition / 'version.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/versionMetadata/1.0.0/schema.json', 'version': '4.0.0'})
     save(definition / 'report.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.0.0/schema.json', 'themeCollection': {'customTheme': {'name': 'NolaPulse_theme', 'type': 'RegisteredResources', 'reportVersionAtImport': {'visual': '2.1.0', 'page': '2.0.0', 'report': '3.0.0'}}}, 'resourcePackages': [{'name': 'RegisteredResources', 'type': 'RegisteredResources', 'items': [{'name': 'NolaPulse_theme', 'path': 'theme.json', 'type': 'CustomTheme'}]}]})
     save(report / 'StaticResources/RegisteredResources/theme.json', json.loads((DEST / 'theme.json').read_text()))
-    save(definition / 'pages/pages.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json', 'pageOrder': ['attendance', 'decision'], 'activePageName': 'attendance'})
+    save(definition / 'pages/pages.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json', 'pageOrder': ['decision', 'attendance'], 'activePageName': 'decision'})
     page = definition / 'pages/decision'
     save(page / 'page.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json', 'name': 'decision', 'displayName': 'NOLA PULSE · Decision economics', 'displayOption': 'FitToPage', 'width': 1280, 'height': 720})
 
@@ -85,12 +88,13 @@ def build():
 
     visual('scenario', 'slicer', 25, 20, 420, 90, {'Values': [('Scenarios', 'label', False)]}, 'Select one scenario · all inputs are assumed')
     visual('decision', 'card', 470, 20, 785, 90, {'Values': [('Scenarios', 'Decision', True)]}, 'Campaign decision · conditional economics')
-    visual('net', 'card', 25, 130, 390, 110, {'Values': [('Scenarios', 'Net Contribution', True)]}, 'Net incremental contribution')
-    visual('threshold', 'card', 445, 130, 390, 110, {'Values': [('Scenarios', 'Break-even Share', True)]}, 'Incrementality reversal threshold')
-    visual('costs', 'card', 865, 130, 390, 110, {'Values': [('Scenarios', 'Campaign Costs', True)]}, 'Total campaign costs')
-    visual('curve', 'lineChart', 25, 265, 610, 300, {'Category': [('Curves', 'incremental_share', False)], 'Y': [('Scenarios', 'Curve Net Contribution', True)]}, 'Decision reversal · other inputs held fixed')
-    visual('markets', 'tableEx', 660, 265, 595, 300, {'Values': [('Markets', 'name', False), ('Markets', 'population', False), ('Markets', 'population_change_pct', False), ('Markets', 'median_income', False)]}, 'Census context · population 2025 / income ACS 2020–24')
-    visual('assumptions', 'tableEx', 25, 585, 1230, 110, {'Values': [('Scenarios', c, False) for c in ['label', 'budget', 'costPerOrder', 'incrementality', 'ticketsPerOrder', 'contributionPerTicket', 'fixedCosts']]}, 'Explicit assumptions · not team campaign results')
+    visual('revenue', 'card', 25, 130, 290, 110, {'Values': [('Scenarios', 'Incremental Ticket Revenue', True)]}, 'Modeled incremental ticket revenue')
+    visual('net', 'card', 335, 130, 290, 110, {'Values': [('Scenarios', 'Net Contribution', True)]}, 'Net incremental contribution')
+    visual('threshold', 'card', 645, 130, 290, 110, {'Values': [('Scenarios', 'Break-even Share', True)]}, 'Incrementality reversal threshold')
+    visual('costs', 'card', 955, 130, 300, 110, {'Values': [('Scenarios', 'Campaign Costs', True)]}, 'Total campaign costs')
+    visual('curve', 'lineChart', 25, 265, 1230, 300, {'Category': [('Curves', 'incremental_share', False)], 'Y': [('Scenarios', 'Curve Net Contribution', True)]}, 'Decision reversal · other inputs held fixed')
+    (page / 'visuals/markets/visual.json').unlink(missing_ok=True)
+    visual('assumptions', 'tableEx', 25, 585, 1230, 110, {'Values': [('Scenarios', c, False) for c in ['label', 'budget', 'costPerOrder', 'incrementality', 'ticketsPerOrder', 'ticketPrice', 'contributionPerTicket', 'fixedCosts']]}, 'Explicit assumptions · not team campaign results')
     page = definition / 'pages/attendance'
     save(page / 'page.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json', 'name': 'attendance', 'displayName': 'NOLA PULSE · Reported attendance', 'displayOption': 'FitToPage', 'width': 1280, 'height': 720})
     visual('franchise', 'slicer', 25, 20, 280, 90, {'Values': [('Attendance', 'franchise', False)]}, 'Select one franchise')

@@ -93,6 +93,20 @@
                       "Entity": "Scenarios"
                     }
                   },
+                  "Property": "ticketPrice"
+                }
+              },
+              "queryRef": "Scenarios.ticketPrice",
+              "nativeQueryRef": "ticketPrice"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Scenarios"
+                    }
+                  },
                   "Property": "contributionPerTicket"
                 }
               },

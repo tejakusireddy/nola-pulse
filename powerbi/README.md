@@ -1,6 +1,6 @@
 # Power BI project
 
-`NolaPulse.pbip` opens a source-controlled semantic model and two report pages with sixteen visuals. The opening attendance page includes franchise and season selectors, source scope, reported attendance total and average, completed home-game count, game-number trend, and source ledger. The separate planning page includes: a scenario selector, decision, net contribution, reversal threshold, campaign costs, reversal curve, regional comparison table, and assumption table.
+`NolaPulse.pbip` opens a source-controlled semantic model and two report pages with sixteen visuals. The attendance page includes franchise and season selectors, source scope, reported attendance total and average, completed home-game count, game-number trend, and source ledger. The opening planning page includes: a scenario selector, decision, net contribution, reversal threshold, campaign costs, reversal curve, regional comparison table, and assumption table.
 
 **Verification status:** report definitions are generated against Microsoft's published PBIR schemas. Power BI Desktop opening, DAX execution, and visual rendering still require a Windows verification pass. Do not present this as a Desktop-validated PBIX.
 
@@ -19,8 +19,8 @@
 3. Open `powerbi/NolaPulse.pbip` in a current Power BI Desktop that supports PBIP/PBIR. Enable the project/enhanced report format feature if your release requires it.
 4. Change the `DataFolder` Power Query parameter to the absolute `data\processed\` directory on that computer, retaining the trailing slash. Refresh the model.
 5. On **Reported attendance**, select Pelicans and 2026-27: total **99,016**, average **16,503** (display rounded), completed home dates **6**. Select Saints and 2026: total **280,201**, average **70,050**, home dates **4**. Source records cover New Orleans only; the Paris game is excluded. Multiple franchises or seasons leave single-scope measures blank.
-6. On the separate **Decision economics** page, select **Reference assumptions** in the scenario slicer. The disconnected market table describes context; choosing a market does not invent a market-specific conversion rate.
-7. Verify net contribution **$1,500**, reversal **52.5%**, campaign costs **$6,300**. Select the 40% incrementality stress: contribution must be **−$1,500**. The no-campaign scenario must have zero campaign costs and contribution and a blank reversal threshold.
+6. On the opening **Decision economics** page, choose **Pelicans · group-ticket planning case**. Verify ticket revenue **$41,250**, net contribution **$7,550**, reversal **46.58%** and campaign costs **$26,200**.
+7. Choose **Saints · regional ticket planning case**: revenue **$50,000**, net **$12,500**, reversal **34.38%**, costs **$27,500**. The Pelicans 40% incrementality stress must produce **−$3,700** contribution. No campaign must have zero revenue, campaign costs and contribution, with a blank reversal threshold.
 8. Verify the curve and assumption table respond to scenario selection. Selecting multiple scenarios intentionally leaves single-scenario measures blank and asks for one selection.
 9. Install the included OFL Montserrat/Roboto fonts if desired. Otherwise use the documented Arial fallback consistently. Check text fit and accessibility in Desktop.
 
