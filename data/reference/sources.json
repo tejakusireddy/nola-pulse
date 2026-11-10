@@ -1,6 +1,62 @@
 [
-  {"id":"census","name":"U.S. Census Bureau · QuickFacts","url":"https://www.census.gov/quickfacts/","kind":"Observed","vintage":"V2025 population; 2020–2024 ACS households and income","method":"Six manually reviewed county/parish records; exact page URLs retained per row.","rights":"U.S. government statistical facts; source attribution retained.","reviewed_on":"2026-11-09"},
-  {"id":"nba","name":"New Orleans Pelicans · Official schedule","url":"https://www.nba.com/pelicans/","kind":"Observed","vintage":"2026–27 season; homepage snapshot","method":"Extract upcoming New Orleans home games from the official page's structured schedule payload. Limited homepage coverage, not a full-season feed.","rights":"Factual event metadata only; no photographs, logos, or editorial text redistributed.","reviewed_on":"2026-11-09"},
-  {"id":"sql","name":"Market comparison · SQL transformation","url":"https://github.com/tejakusireddy/nola-pulse/blob/main/sql/schema.sql","kind":"Derived","vintage":"Model v1.0.0","method":"Income difference = 100 × (market income − Orleans income) / Orleans income. Growth difference = market population change − Orleans change, in percentage points.","rights":"Project transformation; underlying Census facts attributed.","reviewed_on":"2026-11-09"},
-  {"id":"scenario","name":"Campaign economics · Explicit assumptions","url":"https://github.com/tejakusireddy/nola-pulse/blob/main/web/lib/scenario.ts","kind":"Assumed","vintage":"Scenario model v1.0.0","method":"Inputs are editable demonstration assumptions, not team campaign results. All outputs are conditional on these inputs.","rights":"Project model.","reviewed_on":"2026-11-09"}
+  {
+    "id": "census",
+    "name": "U.S. Census Bureau \u00b7 QuickFacts",
+    "url": "https://www.census.gov/quickfacts/",
+    "kind": "Observed",
+    "vintage": "V2025 population; 2020\u20132024 ACS households and income",
+    "method": "Six manually reviewed county/parish records; exact page URLs retained per row.",
+    "rights": "U.S. government statistical facts; source attribution retained.",
+    "reviewed_on": "2026-11-09"
+  },
+  {
+    "id": "nba",
+    "name": "New Orleans Pelicans \u00b7 Official schedule",
+    "url": "https://www.nba.com/pelicans/",
+    "kind": "Observed",
+    "vintage": "2026\u201327 season; homepage snapshot",
+    "method": "Extract upcoming New Orleans home games from the official page's structured schedule payload. Limited homepage coverage, not a full-season feed.",
+    "rights": "Factual event metadata only; no photographs, logos, or editorial text redistributed.",
+    "reviewed_on": "2026-11-09"
+  },
+  {
+    "id": "sql",
+    "name": "Market comparison \u00b7 SQL transformation",
+    "url": "https://github.com/tejakusireddy/nola-pulse/blob/main/sql/schema.sql",
+    "kind": "Derived",
+    "vintage": "Model v1.0.0",
+    "method": "Income difference = 100 \u00d7 (market income \u2212 Orleans income) / Orleans income. Growth difference = market population change \u2212 Orleans change, in percentage points.",
+    "rights": "Project transformation; underlying Census facts attributed.",
+    "reviewed_on": "2026-11-09"
+  },
+  {
+    "id": "scenario",
+    "name": "Campaign economics \u00b7 Explicit assumptions",
+    "url": "https://github.com/tejakusireddy/nola-pulse/blob/main/web/lib/scenario.ts",
+    "kind": "Assumed",
+    "vintage": "Scenario model v1.0.0",
+    "method": "Inputs are editable demonstration assumptions, not team campaign results. All outputs are conditional on these inputs.",
+    "rights": "Project model.",
+    "reviewed_on": "2026-11-09"
+  },
+  {
+    "id": "official-live-schedules",
+    "name": "Saints + Pelicans \u00b7 Official home schedules",
+    "url": "https://www.neworleanssaints.com/schedule/",
+    "kind": "Observed",
+    "vintage": "Upcoming New Orleans home games, refreshed while the app is open",
+    "method": "NBA structured schedule payload and Saints SportsEvent JSON-LD. Each selected event retains its exact official URL and retrieval time. Home games outside New Orleans are excluded.",
+    "rights": "Factual event metadata; no team photography, logos, or editorial text redistributed.",
+    "reviewed_on": "2026-11-09"
+  },
+  {
+    "id": "espn-live",
+    "name": "ESPN \u00b7 NBA and NFL scoreboard context",
+    "url": "https://www.espn.com/nba/scoreboard",
+    "kind": "Observed",
+    "vintage": "Current provider scoreboard window; last-checked time shown on each card",
+    "method": "Fixed ESPN public scoreboard endpoints. Preserve scores and game state; missing values are unavailable. Source failures expose stale status. Scores do not drive campaign economics.",
+    "rights": "Provider-owned factual game context with attribution. No ESPN media assets or broad redistribution license asserted.",
+    "reviewed_on": "2026-11-09"
+  }
 ]

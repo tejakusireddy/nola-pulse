@@ -1,0 +1,32 @@
+name: Validate
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm --prefix web ci
+      - run: python3 -m unittest discover -s tests
+      - run: npm --prefix web test
+      - run: npm --prefix web run typecheck
+      - run: npm --prefix web run format:check
+      - run: python3 scripts/build_data.py --web
+      - run: node --experimental-strip-types web/scripts/export-analytics.mjs
+      - run: python3 scripts/build_powerbi.py
+      - run: git diff --exit-code -- web/data/intelligence.json powerbi
+      - run: npm --prefix web run build

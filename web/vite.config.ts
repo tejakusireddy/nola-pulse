@@ -10,6 +10,7 @@ export default defineConfig(async () => {
   const managed = readExecutionProfile() === "managed-linux";
   return {
     server: {
+      host: managed ? "0.0.0.0" : "127.0.0.1",
       ...(managed ? { host: "0.0.0.0", allowedHosts: ["terminal.local"] } : {}),
       ...(process.env.CODEX_SANDBOX === "seatbelt"
         ? { watch: { useFsEvents: false, usePolling: true } }

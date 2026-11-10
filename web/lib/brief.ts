@@ -4,9 +4,9 @@ import {
   evaluate,
   sensitivity,
   combinedDownside,
-} from "./scenario";
-import type { Scenario } from "./scenario";
-import intelligence from "../data/intelligence.json";
+} from "./scenario.ts";
+import type { Scenario } from "./scenario.ts";
+import intelligence from "../data/intelligence.json" with { type: "json" };
 
 export type Market = (typeof intelligence.markets)[number];
 export type Game = (typeof intelligence.games)[number];

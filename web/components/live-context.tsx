@@ -24,7 +24,7 @@ export default function LiveContext({
 }) {
   const [context, setContext] = useState<Context | null>(null);
   const [failed, setFailed] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [now, setNow] = useState(Date.now());
   async function refresh() {

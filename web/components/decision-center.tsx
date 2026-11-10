@@ -338,9 +338,9 @@ function Sources({ market }: { market: Market }) {
       <article className="panel">
         <h3>Power BI analytical handoff</h3>
         <p>
-          Curated CSVs, an import query, DAX measures, and the matching report
-          theme are supplied in the repository. Native report assembly and
-          Desktop rendering have not been validated.
+          A native PBIP report source, curated CSVs, DAX measures, and the
+          matching report theme are supplied in the repository. Native report
+          assembly and Desktop rendering have not been validated.
         </p>
         <a href="/downloads/powerbi-theme.json" download className="text-link">
           Download report theme <Download size={14} />
@@ -634,6 +634,7 @@ export default function DecisionCenter() {
                     <label>
                       <span className="sr-only">Select home game</span>
                       <select
+                        aria-label="Select home game"
                         value={game.game_id}
                         onChange={(e) =>
                           setGame(
@@ -658,6 +659,7 @@ export default function DecisionCenter() {
                       <MapPin size={14} />
                       <span className="sr-only">Select candidate market</span>
                       <select
+                        aria-label="Select candidate market"
                         value={market.market_id}
                         onChange={(e) =>
                           setMarket(

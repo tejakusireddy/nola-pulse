@@ -186,6 +186,26 @@
       "method": "Inputs are editable demonstration assumptions, not team campaign results. All outputs are conditional on these inputs.",
       "rights": "Project model.",
       "reviewed_on": "2026-11-09"
+    },
+    {
+      "id": "official-live-schedules",
+      "name": "Saints + Pelicans \u00b7 Official home schedules",
+      "url": "https://www.neworleanssaints.com/schedule/",
+      "kind": "Observed",
+      "vintage": "Upcoming New Orleans home games, refreshed while the app is open",
+      "method": "NBA structured schedule payload and Saints SportsEvent JSON-LD. Each selected event retains its exact official URL and retrieval time. Home games outside New Orleans are excluded.",
+      "rights": "Factual event metadata; no team photography, logos, or editorial text redistributed.",
+      "reviewed_on": "2026-11-09"
+    },
+    {
+      "id": "espn-live",
+      "name": "ESPN \u00b7 NBA and NFL scoreboard context",
+      "url": "https://www.espn.com/nba/scoreboard",
+      "kind": "Observed",
+      "vintage": "Current provider scoreboard window; last-checked time shown on each card",
+      "method": "Fixed ESPN public scoreboard endpoints. Preserve scores and game state; missing values are unavailable. Source failures expose stale status. Scores do not drive campaign economics.",
+      "rights": "Provider-owned factual game context with attribution. No ESPN media assets or broad redistribution license asserted.",
+      "reviewed_on": "2026-11-09"
     }
   ],
   "limitations": [
@@ -198,6 +218,6 @@
   "input_sha256": {
     "games.json": "27b4408fedd327a63bac797c4093692e78e44029cbc9960fcff4487e8cbe5ae4",
     "markets.csv": "9022f56f0770e5a4c4aaafba706beca3b6b592203927d35776ed1cf1ee2a2696",
-    "sources.json": "cd45589b6074fa014d396525440e9242f37486d05a540ccc705e4192ef5cd93a"
+    "sources.json": "cb5467f4ed3839dcea33c6355b1284311ac6ccff010aadd1747d1c26167832de"
   }
 }
