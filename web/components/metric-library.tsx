@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ArrowUpRight, ChevronDown, Database, Search } from "lucide-react";
+import franchiseEvidence from "../data/franchise-evidence.json";
 import type { Market } from "../lib/brief";
 import { ASSUMPTIONS, evaluate } from "../lib/scenario";
 import type { Scenario } from "../lib/scenario";
@@ -31,7 +32,19 @@ export default function MetricLibrary({
   const r = evaluate(scenario);
   const model =
     "lib/scenario.ts · evaluate() · model 1.0.0. Derived from the six editable assumptions; not measured performance.";
+  const observation =
+    franchiseEvidence[franchise as keyof typeof franchiseEvidence];
   const metrics: Metric[] = [
+    {
+      name: observation.label,
+      value: integer(observation.value),
+      kind: "Observed",
+      category: "Team context",
+      definition: `${observation.definition} ${observation.coverage}`,
+      source: `${observation.source_name} · ${observation.source_locator} · ${observation.game_date} · reviewed ${observation.reviewed_on}`,
+      url: observation.source_url,
+      use: "Describe a specific home game. Do not compare cross-sport attendance totals as utilization or use attendance to infer campaign returns.",
+    },
     ...[
       [
         "Net incremental contribution",

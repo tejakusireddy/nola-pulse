@@ -6,6 +6,7 @@ import FranchiseSwitch, { useSelectedFranchise } from "./franchise-switch";
 import RegionalMap from "./regional-map";
 import VenueContext from "./venue-context";
 import ScenarioComparison from "./scenario-comparison";
+import PublicTeamEvidence from "./public-team-evidence";
 import type { Franchise } from "./franchise-switch";
 import MetricLibrary from "./metric-library";
 import saintsSchedule from "../data/saints-schedule.json";
@@ -302,8 +303,30 @@ export default function DecisionCenter() {
   useEffect(() => {
     document.documentElement.dataset.franchise = activeFranchise.toLowerCase();
   }, [activeFranchise]);
-  const [scenario, setScenario] = useState<Scenario>({ ...DEFAULT_SCENARIO });
-  const [baseline, setBaseline] = useState<Scenario>({ ...DEFAULT_SCENARIO });
+  const [scenarios, setScenarios] = useState<Record<Franchise, Scenario>>({
+    Pelicans: { ...DEFAULT_SCENARIO },
+    Saints: { ...DEFAULT_SCENARIO },
+  });
+  const [baselines, setBaselines] = useState<Record<Franchise, Scenario>>({
+    Pelicans: { ...DEFAULT_SCENARIO },
+    Saints: { ...DEFAULT_SCENARIO },
+  });
+  const scenario = scenarios[activeFranchise];
+  const baseline = baselines[activeFranchise];
+  const setScenario = (
+    update: Scenario | ((previous: Scenario) => Scenario),
+  ) => {
+    setScenarios((previous) => ({
+      ...previous,
+      [activeFranchise]:
+        typeof update === "function"
+          ? update(previous[activeFranchise])
+          : update,
+    }));
+  };
+  const setBaseline = (next: Scenario) => {
+    setBaselines((previous) => ({ ...previous, [activeFranchise]: next }));
+  };
   const [exportOpen, setExportOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const [experimentOpen, setExperimentOpen] = useState(false);
@@ -529,6 +552,11 @@ export default function DecisionCenter() {
             <div role="alert" className="error-banner">
               {evidenceError}
             </div>
+          )}
+          {(view === "decision" ||
+            view === "simulator" ||
+            view === "evidence") && (
+            <PublicTeamEvidence franchise={activeFranchise} />
           )}
           {view === "evidence" ? (
             <Sources market={market} franchise={activeFranchise} />

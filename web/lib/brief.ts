@@ -8,6 +8,8 @@ import {
 import type { Scenario } from "./scenario.ts";
 import intelligence from "../data/intelligence.json" with { type: "json" };
 
+import franchiseEvidence from "../data/franchise-evidence.json" with { type: "json" };
+
 export type Market = (typeof intelligence.markets)[number];
 export type Game = (typeof intelligence.games)[number];
 
@@ -57,6 +59,11 @@ export function createBrief(
       "Conditional campaign economics, not an optimized market allocation or a measured return forecast.",
     game,
     market,
+    public_team_observation:
+      franchiseEvidence[game.franchise as keyof typeof franchiseEvidence] ??
+      null,
+    scenario_disclosure:
+      "Both franchises begin with identical illustrative assumptions. These inputs are not estimated from attendance, demographics, or actual team sales. Scenario edits and pinned comparisons are independent for each franchise.",
     inputs: ASSUMPTIONS.map((a) => ({
       key: a.key,
       value: scenario[a.key],

@@ -72,3 +72,24 @@ test("pinned comparisons preserve assumptions and exact scenario deltas in the e
     createBrief(market, game, current, { ...current, incrementality: 2 }),
   );
 });
+
+test("public observations retain franchise, measurement definition, date, and source without replacing assumed economics", () => {
+  const pelicans = createBrief(market, game, DEFAULT_SCENARIO);
+  const saints = createBrief(market, saintsSchedule[0], DEFAULT_SCENARIO);
+  assert.equal(pelicans.public_team_observation.value, 17767);
+  assert.equal(saints.public_team_observation.value, 70182);
+  assert.equal(pelicans.public_team_observation.label, "Reported attendance");
+  assert.equal(
+    saints.public_team_observation.label,
+    "Reported paid attendance",
+  );
+  assert.equal(saints.public_team_observation.game_date, "2026-11-08");
+  assert.match(saints.public_team_observation.source_url, /#page=2$/);
+  for (const brief of [pelicans, saints]) {
+    assert.equal(brief.derived.netContribution, 1500);
+    assert.ok(brief.public_team_observation.reviewed_on);
+    assert.ok(brief.public_team_observation.transformation);
+    assert.ok(brief.inputs.every((input) => input.kind === "Assumed"));
+    assert.match(brief.scenario_disclosure, /not estimated from attendance/);
+  }
+});

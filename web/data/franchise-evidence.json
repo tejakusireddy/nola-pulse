@@ -1,0 +1,33 @@
+{
+  "Pelicans": {
+    "value": 17767,
+    "label": "Reported attendance",
+    "game_date": "2026-11-06",
+    "opponent": "Minnesota Timberwolves",
+    "venue": "Smoothie King Center",
+    "source_name": "NBA game summary",
+    "source_url": "https://www.nba.com/game/min-vs-nop-0022600031",
+    "source_locator": "Game information \u00b7 attendance",
+    "reviewed_on": "2026-11-10",
+    "kind": "Observed",
+    "definition": "Attendance published for this game. The NBA summary does not establish paid tickets, gate scans, or ticket revenue.",
+    "coverage": "One reviewed home game; not a season average or a live feed.",
+    "transformation": "Published attendance transcribed as an integer; no revenue or utilization inferred."
+  },
+  "Saints": {
+    "value": 70182,
+    "label": "Reported paid attendance",
+    "game_date": "2026-11-08",
+    "opponent": "Cleveland Browns",
+    "venue": "Caesars Superdome",
+    "source_name": "Official Saints / NFL gamebook",
+    "source_url": "https://static.clubs.nfl.com/image/upload/saints/qrnrnc0ipcrqaifryny0.pdf#page=2",
+    "source_locator": "PDF page 2 \u00b7 Paid Attendance",
+    "source_sha256": "0f5592bb5fc3ca71e1eb2c7e17d2a4873a1767a64151c11d473fe5efedd967c8",
+    "reviewed_on": "2026-11-10",
+    "kind": "Observed",
+    "definition": "Paid attendance as reported in the official gamebook. This is an aggregate publication, not a sales ledger, gate-scan count, or revenue measure.",
+    "coverage": "One reviewed home game; not a season average or a live feed.",
+    "transformation": "Published paid attendance transcribed as an integer; no revenue or utilization inferred."
+  }
+}

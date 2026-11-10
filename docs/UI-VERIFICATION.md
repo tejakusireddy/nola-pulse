@@ -27,3 +27,9 @@ The franchise redesign was checked in the local in-app browser before publicatio
 Automated checks: Python snapshot integrity, 13 model/feed/export tests, TypeScript, ESLint, formatting, production build, and 12 Power BI report files checked against Microsoft schemas. Native Power BI Desktop rendering remains unverified.
 
 Scenario outputs are not observed team performance. Eleven commercial measure groups require additional data connections. These are visible requirements, not implemented feeds.
+
+## Public evidence and franchise scenario isolation · November 10, 2026
+
+- Verified Pelicans attendance directly in NBA Game Info and Saints paid attendance on official gamebook page 2. Dates, definitions, source links and single-game coverage remain visible.
+- Changed Pelicans incrementality to 40%: net contribution became −$1,500. Pinned those assumptions. Switched to Saints: incrementality stayed at 65%, current and pinned contribution remained $1,500. Switched back to confirm Pelicans retained its own scenario and comparison.
+- Reference result is calculated from the shared demonstration defaults and explained as illustrative. Attendance does not feed acquisition cost, contribution margin or incrementality.
