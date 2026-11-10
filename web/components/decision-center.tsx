@@ -620,7 +620,7 @@ export default function DecisionCenter() {
               {evidenceError}
             </div>
           )}
-          {view !== "evidence" && (
+          {view === "markets" && (
             <LiveContext onSelect={selectGame} onRefresh={receiveSchedule} />
           )}
           {view === "evidence" ? (
@@ -704,9 +704,9 @@ export default function DecisionCenter() {
                       <h2 id="recommendation-title">
                         {result.status === "positive" ? (
                           <>
-                            Test the economics.
+                            Prepare a {market.short_name} test.
                             <br />
-                            Then earn the right to scale.
+                            Keep scale conditional.
                           </>
                         ) : result.status === "inactive" ? (
                           <>
@@ -789,6 +789,12 @@ export default function DecisionCenter() {
                     </button>
                   </div>
                 </>
+              )}
+              {view === "decision" && (
+                <LiveContext
+                  onSelect={selectGame}
+                  onRefresh={receiveSchedule}
+                />
               )}
               <div className="landscape-grid">
                 <section className="panel map-panel">
