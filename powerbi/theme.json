@@ -1,0 +1,16 @@
+{
+  "name": "NOLA PULSE",
+  "dataColors": ["#0A2340", "#B9975B", "#16766B", "#A74E2A", "#D3BC8D", "#5C6D7E"],
+  "background": "#F6F7F9",
+  "foreground": "#172A40",
+  "tableAccent": "#B9975B",
+  "good": "#16766B",
+  "bad": "#A74E2A",
+  "neutral": "#5C6D7E",
+  "textClasses": {
+    "title": {"fontFace": "Montserrat", "fontSize": 16, "color": "#0A2340"},
+    "header": {"fontFace": "Montserrat", "fontSize": 12, "color": "#172A40"},
+    "label": {"fontFace": "Roboto", "fontSize": 10, "color": "#5C6D7E"},
+    "callout": {"fontFace": "Roboto", "fontSize": 28, "color": "#0A2340"}
+  }
+}

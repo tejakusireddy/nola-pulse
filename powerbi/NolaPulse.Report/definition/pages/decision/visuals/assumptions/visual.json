@@ -1,0 +1,144 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
+  "name": "assumptions",
+  "position": {
+    "x": 25,
+    "y": 585,
+    "width": 1230,
+    "height": 110,
+    "z": 610,
+    "tabOrder": 610
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Scenarios"
+                    }
+                  },
+                  "Property": "label"
+                }
+              },
+              "queryRef": "Scenarios.label",
+              "nativeQueryRef": "label"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Scenarios"
+                    }
+                  },
+                  "Property": "budget"
+                }
+              },
+              "queryRef": "Scenarios.budget",
+              "nativeQueryRef": "budget"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Scenarios"
+                    }
+                  },
+                  "Property": "costPerOrder"
+                }
+              },
+              "queryRef": "Scenarios.costPerOrder",
+              "nativeQueryRef": "costPerOrder"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Scenarios"
+                    }
+                  },
+                  "Property": "incrementality"
+                }
+              },
+              "queryRef": "Scenarios.incrementality",
+              "nativeQueryRef": "incrementality"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Scenarios"
+                    }
+                  },
+                  "Property": "ticketsPerOrder"
+                }
+              },
+              "queryRef": "Scenarios.ticketsPerOrder",
+              "nativeQueryRef": "ticketsPerOrder"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Scenarios"
+                    }
+                  },
+                  "Property": "contributionPerTicket"
+                }
+              },
+              "queryRef": "Scenarios.contributionPerTicket",
+              "nativeQueryRef": "contributionPerTicket"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Scenarios"
+                    }
+                  },
+                  "Property": "fixedCosts"
+                }
+              },
+              "queryRef": "Scenarios.fixedCosts",
+              "nativeQueryRef": "fixedCosts"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Explicit assumptions \u00b7 not team campaign results'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

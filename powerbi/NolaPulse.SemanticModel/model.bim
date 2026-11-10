@@ -1,0 +1,422 @@
+{
+  "name": "NolaPulse",
+  "compatibilityLevel": 1600,
+  "model": {
+    "culture": "en-US",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "expressions": [
+      {
+        "name": "DataFolder",
+        "kind": "m",
+        "expression": "\"C:\\NolaPulse\\data\\processed\\\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]"
+      }
+    ],
+    "tables": [
+      {
+        "name": "Markets",
+        "columns": [
+          {
+            "name": "market_id",
+            "dataType": "string",
+            "sourceColumn": "market_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "name",
+            "dataType": "string",
+            "sourceColumn": "name",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "short_name",
+            "dataType": "string",
+            "sourceColumn": "short_name",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "state",
+            "dataType": "string",
+            "sourceColumn": "state",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "population",
+            "dataType": "double",
+            "sourceColumn": "population",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "population_change_pct",
+            "dataType": "double",
+            "sourceColumn": "population_change_pct",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "households",
+            "dataType": "double",
+            "sourceColumn": "households",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "median_income",
+            "dataType": "double",
+            "sourceColumn": "median_income",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "source_url",
+            "dataType": "string",
+            "sourceColumn": "source_url",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "population_vintage",
+            "dataType": "string",
+            "sourceColumn": "population_vintage",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "income_vintage",
+            "dataType": "string",
+            "sourceColumn": "income_vintage",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "reviewed_on",
+            "dataType": "string",
+            "sourceColumn": "reviewed_on",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "income_difference_vs_orleans_pct",
+            "dataType": "double",
+            "sourceColumn": "income_difference_vs_orleans_pct",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "growth_difference_vs_orleans_pp",
+            "dataType": "double",
+            "sourceColumn": "growth_difference_vs_orleans_pp",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Markets",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(DataFolder & \"market_comparison.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Typed = Table.TransformColumnTypes(Headers, {{\"market_id\", type text}, {\"name\", type text}, {\"short_name\", type text}, {\"state\", type text}, {\"population\", type number}, {\"population_change_pct\", type number}, {\"households\", type number}, {\"median_income\", type number}, {\"source_url\", type text}, {\"population_vintage\", type text}, {\"income_vintage\", type text}, {\"reviewed_on\", type text}, {\"income_difference_vs_orleans_pct\", type number}, {\"growth_difference_vs_orleans_pp\", type number}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Games",
+        "columns": [
+          {
+            "name": "game_id",
+            "dataType": "string",
+            "sourceColumn": "game_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "franchise",
+            "dataType": "string",
+            "sourceColumn": "franchise",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "opponent",
+            "dataType": "string",
+            "sourceColumn": "opponent",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "starts_at",
+            "dataType": "string",
+            "sourceColumn": "starts_at",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "venue",
+            "dataType": "string",
+            "sourceColumn": "venue",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "source_url",
+            "dataType": "string",
+            "sourceColumn": "source_url",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "retrieved_at",
+            "dataType": "string",
+            "sourceColumn": "retrieved_at",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Games",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(DataFolder & \"games.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Typed = Table.TransformColumnTypes(Headers, {{\"game_id\", type text}, {\"franchise\", type text}, {\"opponent\", type text}, {\"starts_at\", type text}, {\"venue\", type text}, {\"source_url\", type text}, {\"retrieved_at\", type text}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Scenarios",
+        "columns": [
+          {
+            "name": "scenario_id",
+            "dataType": "string",
+            "sourceColumn": "scenario_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "label",
+            "dataType": "string",
+            "sourceColumn": "label",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "budget",
+            "dataType": "double",
+            "sourceColumn": "budget",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "costPerOrder",
+            "dataType": "double",
+            "sourceColumn": "costPerOrder",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ticketsPerOrder",
+            "dataType": "double",
+            "sourceColumn": "ticketsPerOrder",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "contributionPerTicket",
+            "dataType": "double",
+            "sourceColumn": "contributionPerTicket",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "incrementality",
+            "dataType": "double",
+            "sourceColumn": "incrementality",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "fixedCosts",
+            "dataType": "double",
+            "sourceColumn": "fixedCosts",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "attributedOrders",
+            "dataType": "double",
+            "sourceColumn": "attributedOrders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "incrementalOrders",
+            "dataType": "double",
+            "sourceColumn": "incrementalOrders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "incrementalTickets",
+            "dataType": "double",
+            "sourceColumn": "incrementalTickets",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "grossContribution",
+            "dataType": "double",
+            "sourceColumn": "grossContribution",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "totalCosts",
+            "dataType": "double",
+            "sourceColumn": "totalCosts",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "netContribution",
+            "dataType": "double",
+            "sourceColumn": "netContribution",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "breakEvenShare",
+            "dataType": "double",
+            "sourceColumn": "breakEvenShare",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "breakEvenOrders",
+            "dataType": "double",
+            "sourceColumn": "breakEvenOrders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "maxCostPerOrder",
+            "dataType": "double",
+            "sourceColumn": "maxCostPerOrder",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "minContributionPerTicket",
+            "dataType": "double",
+            "sourceColumn": "minContributionPerTicket",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "marginOfSafety",
+            "dataType": "double",
+            "sourceColumn": "marginOfSafety",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "feasible",
+            "dataType": "boolean",
+            "sourceColumn": "feasible",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "status",
+            "dataType": "string",
+            "sourceColumn": "status",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Scenarios",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(DataFolder & \"scenarios.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Typed = Table.TransformColumnTypes(Headers, {{\"scenario_id\", type text}, {\"label\", type text}, {\"budget\", type number}, {\"costPerOrder\", type number}, {\"ticketsPerOrder\", type number}, {\"contributionPerTicket\", type number}, {\"incrementality\", type number}, {\"fixedCosts\", type number}, {\"attributedOrders\", type number}, {\"incrementalOrders\", type number}, {\"incrementalTickets\", type number}, {\"grossContribution\", type number}, {\"totalCosts\", type number}, {\"netContribution\", type number}, {\"breakEvenShare\", type number}, {\"breakEvenOrders\", type number}, {\"maxCostPerOrder\", type number}, {\"minContributionPerTicket\", type number}, {\"marginOfSafety\", type number}, {\"feasible\", type logical}, {\"status\", type text}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Curve Net Contribution",
+            "expression": "IF(HASONEVALUE(Scenarios[scenario_id]), SUM(Curves[net_contribution]), BLANK())",
+            "formatString": "$#,0;($#,0);$0"
+          },
+          {
+            "name": "Attributed Orders",
+            "expression": "DIVIDE(SELECTEDVALUE(Scenarios[budget]), SELECTEDVALUE(Scenarios[costPerOrder]))",
+            "formatString": "#,0.0"
+          },
+          {
+            "name": "Incremental Orders",
+            "expression": "[Attributed Orders] * SELECTEDVALUE(Scenarios[incrementality])",
+            "formatString": "#,0.0"
+          },
+          {
+            "name": "Campaign Costs",
+            "expression": "SELECTEDVALUE(Scenarios[budget]) + SELECTEDVALUE(Scenarios[fixedCosts])",
+            "formatString": "$#,0;($#,0);$0"
+          },
+          {
+            "name": "Net Contribution",
+            "expression": "[Incremental Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * SELECTEDVALUE(Scenarios[contributionPerTicket]) - [Campaign Costs]",
+            "formatString": "$#,0;($#,0);$0"
+          },
+          {
+            "name": "Break-even Share",
+            "expression": "DIVIDE([Campaign Costs], [Attributed Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * SELECTEDVALUE(Scenarios[contributionPerTicket]))",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Decision",
+            "expression": "IF(NOT HASONEVALUE(Scenarios[scenario_id]), \"Select one scenario\", IF(SELECTEDVALUE(Scenarios[budget]) = 0, \"No active campaign\", IF(ABS([Net Contribution]) < 0.000001, \"Break-even\", IF([Net Contribution] > 0, \"Conditional test\", \"Revise before launch\"))))",
+            "formatString": ""
+          }
+        ]
+      },
+      {
+        "name": "Curves",
+        "columns": [
+          {
+            "name": "scenario_id",
+            "dataType": "string",
+            "sourceColumn": "scenario_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "incremental_share",
+            "dataType": "double",
+            "sourceColumn": "incremental_share",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "net_contribution",
+            "dataType": "double",
+            "sourceColumn": "net_contribution",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Curves",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(DataFolder & \"curves.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Typed = Table.TransformColumnTypes(Headers, {{\"scenario_id\", type text}, {\"incremental_share\", type number}, {\"net_contribution\", type number}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "Scenarios_Curves",
+        "fromTable": "Curves",
+        "fromColumn": "scenario_id",
+        "toTable": "Scenarios",
+        "toColumn": "scenario_id",
+        "crossFilteringBehavior": "oneDirection"
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+Curve Net Contribution =
+IF(HASONEVALUE(Scenarios[scenario_id]), SUM(Curves[net_contribution]), BLANK())
+
+Attributed Orders =
+DIVIDE(SELECTEDVALUE(Scenarios[budget]), SELECTEDVALUE(Scenarios[costPerOrder]))
+
+Incremental Orders =
+[Attributed Orders] * SELECTEDVALUE(Scenarios[incrementality])
+
+Campaign Costs =
+SELECTEDVALUE(Scenarios[budget]) + SELECTEDVALUE(Scenarios[fixedCosts])
+
+Net Contribution =
+[Incremental Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * SELECTEDVALUE(Scenarios[contributionPerTicket]) - [Campaign Costs]
+
+Break-even Share =
+DIVIDE([Campaign Costs], [Attributed Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * SELECTEDVALUE(Scenarios[contributionPerTicket]))
+
+Decision =
+IF(NOT HASONEVALUE(Scenarios[scenario_id]), "Select one scenario", IF(SELECTEDVALUE(Scenarios[budget]) = 0, "No active campaign", IF(ABS([Net Contribution]) < 0.000001, "Break-even", IF([Net Contribution] > 0, "Conditional test", "Revise before launch"))))

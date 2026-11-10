@@ -1,0 +1,78 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
+  "name": "curve",
+  "position": {
+    "x": 25,
+    "y": 265,
+    "width": 610,
+    "height": 300,
+    "z": 290,
+    "tabOrder": 290
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Curves"
+                    }
+                  },
+                  "Property": "incremental_share"
+                }
+              },
+              "queryRef": "Curves.incremental_share",
+              "nativeQueryRef": "incremental_share"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Scenarios"
+                    }
+                  },
+                  "Property": "Curve Net Contribution"
+                }
+              },
+              "queryRef": "Scenarios.Curve Net Contribution",
+              "nativeQueryRef": "Curve Net Contribution"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Decision reversal \u00b7 other inputs held fixed'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
