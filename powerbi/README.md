@@ -35,3 +35,7 @@ DAX is a separate execution engine. Its formulas mirror the shared economics; th
 ## Franchise themes
 
 `theme.json` and `theme-pelicans.json` match the navy Pelicans edition; `theme-saints.json` matches the black and gold Saints edition. Install the licensed fonts from `web/public/fonts` on the Desktop computer, then use View → Themes → Browse for themes to select an edition. Saira is used for Saints; Montserrat and Roboto for Pelicans. Typography and chart semantics match the site; Power BI has no hover-based franchise switching. Desktop rendering remains unverified.
+
+## Ready-to-open Windows bundle
+
+Run `python3 scripts/package_powerbi.py` on the development machine. The ignored `artifacts/NolaPulse-Windows.zip` includes the report project, precomputed CSVs for both franchises, licensed fonts, themes, checksums, and [Windows acceptance checks](WINDOWS-CHECK.md). The Windows reviewer does not need Python or Node. This packaging step does not perform Desktop verification.
