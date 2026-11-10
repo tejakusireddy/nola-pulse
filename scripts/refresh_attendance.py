@@ -83,7 +83,7 @@ def refresh(cache=None):
         'retrieved_at': reviewed, 'method': row['reason'],
     } for row in corrections.values())
     with (directory / 'home-games.csv').open('w', newline='') as handle:
-        writer = csv.DictWriter(handle, fieldnames=COLUMNS)
+        writer = csv.DictWriter(handle, fieldnames=COLUMNS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(sorted(games, key=lambda row: (row['franchise'], row['starts_at'], row['event_id'])))
     (directory / 'sources.json').write_text(json.dumps({'as_of': as_of, 'sources': sources, 'excluded': exclusions}, indent=2) + '\n')
