@@ -1,0 +1,48 @@
+{
+  "verified_on": "2026-11-09",
+  "colors": {
+    "navy": "#0a2340",
+    "gold": "#b9975b",
+    "pelicans-red": "#ce0e2d",
+    "saints-gold": "#d3bc8d",
+    "saints-black": "#000000",
+    "canvas": "#f6f7f9",
+    "paper": "#ffffff",
+    "ink": "#172a40",
+    "muted": "#5c6d7e",
+    "quiet": "#8c99a8",
+    "line": "#e3e8ee",
+    "positive": "#16766b",
+    "positive-wash": "#eef7f4",
+    "negative": "#a74e2a",
+    "negative-wash": "#fcf3ec",
+    "nav-text": "#aebed0",
+    "nav-border": "#29415c",
+    "nav-highlight": "#19354f",
+    "gold-wash": "#faf6ed",
+    "chart-grid": "#e9edf1",
+    "map-land": "#e8edf0",
+    "map-line": "#cbd5de",
+    "map-dot": "#d3dce4"
+  },
+  "supporting_ui_tints": [
+    "#0a23400d",
+    "#0a234018",
+    "#0a234020",
+    "#155f56",
+    "#705727",
+    "#814026",
+    "#d0e7df",
+    "#d8e4ee",
+    "#e7d9bc",
+    "#edf3f8",
+    "#efd9c9",
+    "#ffffff04"
+  ],
+  "fonts": {
+    "display": "Montserrat",
+    "body": "Roboto",
+    "powerbi_fallback": "Arial"
+  },
+  "provenance": "See DESIGN.md. Only franchise identity values are claimed as official. Other tokens are project UI and analytical choices."
+}
