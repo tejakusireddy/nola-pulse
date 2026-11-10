@@ -20,14 +20,21 @@ The supplied visual reference listed Pelicans gold as `#B99C5B`. The primary med
 
 ## Typography and assets
 
-Montserrat and Roboto are confirmed website families on the Pelicans homepage. The project self-hosts their Google Fonts distributions under the accompanying SIL Open Font License files. This does not claim they are the proprietary jersey wordmark typefaces. Saints website preloads All-Pro Display, All-Pro Sans, All-Pro Stats, Druk, and Saira. No license to redistribute the proprietary files was established, so the interface retains its documented Montserrat/Roboto UI system. Power BI uses these families where installed and Arial as an explicit supported fallback; rendering must be checked in Desktop.
+Montserrat and Roboto are confirmed website families on the Pelicans homepage. The project self-hosts their Google Fonts distributions under the accompanying SIL Open Font License files. Saints website preloads All-Pro Display, All-Pro Sans, All-Pro Stats, Druk, and Saira. The Saints edition now uses Saira, distributed by Omnibus-Type under the SIL Open Font License. The proprietary All-Pro and Druk files are not redistributed. These are verified website families, not a claim to reproduce proprietary jersey wordmark typography.
 
-All UI icons use Lucide with its ISC notice in `docs/licenses/`. The NOLA PULSE favicon is a project pulse symbol, not a team logo. No team logo or game photograph is redistributed: the first release uses names, factual metadata, geography, and analytical visuals. Licensed original media can be added without replacing it with generated team marks or synthetic game photography.
+Authentic, unmodified SVG files from the NBA CDN and NFL club-logo endpoint identify the teams. Their source URLs, byte checksums, and rights notes are recorded in `BRAND-ASSETS.json`. Team trademarks remain with their owners; no team endorsement or general asset license is implied. No generated marks or synthetic game photography are used. All UI icons use Lucide with its ISC notice in `docs/licenses/`. The NOLA PULSE favicon is a project pulse symbol.
+
+- [Saira foundry page](https://www.omnibus-type.com/fonts/saira/).
+- [Google Fonts Saira source and OFL](https://github.com/google/fonts/tree/main/ofl/saira).
+
+## Franchise interaction
+
+The header previews each franchise on pointer hover or keyboard focus. Selecting with a click, tap, Enter, or Space persists the franchise when browser storage is available. Leaving an uncommitted preview returns to the selected franchise. The effective franchise controls typography, surface colors, gold, active navigation, map, and game context. It does not invent different conversion assumptions for each team. The official Saints schedule is retained as a dated fallback; live source freshness remains visible.
 
 State paths come from Census cartographic boundaries distributed through `us-atlas` 3.0.1. The map uses an equirectangular projection. Representative city anchors are approximate layout references, not measured drive times, county centroids, or market catchment boundaries.
 
 ## Analytical semantics
 
-Teal (`#16766B`) represents favorable contribution; rust (`#A74E2A`) represents adverse contribution. Labels and signs carry the same meaning independently of color. Pelicans red stays a franchise token. Gold marks identity and the calculated reversal boundary, not statistical confidence. Neutral surfaces and text are chosen for readability. Full token values, including supporting borders and tints, are registered in `design-tokens.json`.
+Teal (`#70D9C0`) represents favorable contribution and apricot (`#FFB18D`) adverse contribution on dark surfaces. Labels and signs carry the same meaning independently of color. Pelicans red stays a franchise token. Gold marks identity and the calculated reversal boundary, not statistical confidence. Supporting navy and charcoal tints are project UI choices, not additional official brand colors. Full values are registered in `design-tokens.json`.
 
-No shadow, tint, or fallback is described as an official team color. Team colors retain distinct gold tokens across franchise contexts. The independent-project identification is part of every page and export.
+Power BI themes use the same franchise families, surfaces, analytical colors and hierarchy where the fonts are installed. Power BI Desktop does not support the website's hover preview: import the desired franchise theme explicitly. Native rendering must still be verified on Windows.

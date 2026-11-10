@@ -11,3 +11,4 @@
 *.jpeg binary
 *.woff binary
 *.woff2 binary
+web/public/brand/*.svg -text
