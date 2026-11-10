@@ -1,0 +1,52 @@
+{
+  "source_url": "https://www.nba.com/pelicans/",
+  "retrieved_at": "2026-11-10T04:00:00.922956+00:00",
+  "coverage": "Upcoming home games exposed on the team homepage; not the complete season.",
+  "games": [
+    {
+      "game_id": "0022600223",
+      "franchise": "Pelicans",
+      "opponent": "Nets",
+      "starts_at": "2026-11-12T01:00:00Z",
+      "venue": "Smoothie King Center",
+      "source_url": "https://www.nba.com/pelicans/",
+      "retrieved_at": "2026-11-10T04:00:00.922956+00:00"
+    },
+    {
+      "game_id": "0022600038",
+      "franchise": "Pelicans",
+      "opponent": "Grizzlies",
+      "starts_at": "2026-11-14T01:00:00Z",
+      "venue": "Smoothie King Center",
+      "source_url": "https://www.nba.com/pelicans/",
+      "retrieved_at": "2026-11-10T04:00:00.922956+00:00"
+    },
+    {
+      "game_id": "0022600231",
+      "franchise": "Pelicans",
+      "opponent": "Nuggets",
+      "starts_at": "2026-11-15T00:00:00Z",
+      "venue": "Smoothie King Center",
+      "source_url": "https://www.nba.com/pelicans/",
+      "retrieved_at": "2026-11-10T04:00:00.922956+00:00"
+    },
+    {
+      "game_id": "0022600251",
+      "franchise": "Pelicans",
+      "opponent": "Warriors",
+      "starts_at": "2026-11-17T01:00:00Z",
+      "venue": "Smoothie King Center",
+      "source_url": "https://www.nba.com/pelicans/",
+      "retrieved_at": "2026-11-10T04:00:00.922956+00:00"
+    },
+    {
+      "game_id": "0022600264",
+      "franchise": "Pelicans",
+      "opponent": "Pistons",
+      "starts_at": "2026-11-19T01:00:00Z",
+      "venue": "Smoothie King Center",
+      "source_url": "https://www.nba.com/pelicans/",
+      "retrieved_at": "2026-11-10T04:00:00.922956+00:00"
+    }
+  ]
+}

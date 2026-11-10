@@ -1,0 +1,7 @@
+market_id,name,short_name,state,population,population_change_pct,households,median_income,source_url,population_vintage,income_vintage,reviewed_on
+22071,Orleans Parish,New Orleans,LA,362154,-5.7,155821,56631,https://www.census.gov/quickfacts/orleansparishlouisiana,2025-07-01 V2025,2020-2024 ACS (2024 USD),2026-11-09
+22051,Jefferson Parish,Jefferson,LA,431398,-2.1,177003,65252,https://www.census.gov/quickfacts/jeffersonparishlouisiana,2025-07-01 V2025,2020-2024 ACS (2024 USD),2026-11-09
+22103,St. Tammany Parish,Northshore,LA,279108,5.5,105082,81202,https://www.census.gov/quickfacts/sttammanyparishlouisiana,2025-07-01 V2025,2020-2024 ACS (2024 USD),2026-11-09
+22033,East Baton Rouge Parish,Baton Rouge,LA,456180,-0.1,177295,63071,https://www.census.gov/quickfacts/eastbatonrougeparishlouisiana,2025-07-01 V2025,2020-2024 ACS (2024 USD),2026-11-09
+28047,Harrison County,Mississippi Coast,MS,217136,4.1,83358,59479,https://www.census.gov/quickfacts/harrisoncountymississippi,2025-07-01 V2025,2020-2024 ACS (2024 USD),2026-11-09
+01097,Mobile County,Mobile,AL,411658,-0.8,161665,58880,https://www.census.gov/quickfacts/mobilecountyalabama,2025-07-01 V2025,2020-2024 ACS (2024 USD),2026-11-09

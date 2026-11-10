@@ -1,0 +1,203 @@
+{
+  "snapshot_date": "2026-11-09",
+  "version": "1.0.0",
+  "markets": [
+    {
+      "market_id": "01097",
+      "name": "Mobile County",
+      "short_name": "Mobile",
+      "state": "AL",
+      "population": 411658,
+      "population_change_pct": -0.8,
+      "households": 161665,
+      "median_income": 58880,
+      "source_url": "https://www.census.gov/quickfacts/mobilecountyalabama",
+      "population_vintage": "2025-07-01 V2025",
+      "income_vintage": "2020-2024 ACS (2024 USD)",
+      "reviewed_on": "2026-11-09",
+      "income_difference_vs_orleans_pct": 3.97,
+      "growth_difference_vs_orleans_pp": 4.9
+    },
+    {
+      "market_id": "22033",
+      "name": "East Baton Rouge Parish",
+      "short_name": "Baton Rouge",
+      "state": "LA",
+      "population": 456180,
+      "population_change_pct": -0.1,
+      "households": 177295,
+      "median_income": 63071,
+      "source_url": "https://www.census.gov/quickfacts/eastbatonrougeparishlouisiana",
+      "population_vintage": "2025-07-01 V2025",
+      "income_vintage": "2020-2024 ACS (2024 USD)",
+      "reviewed_on": "2026-11-09",
+      "income_difference_vs_orleans_pct": 11.37,
+      "growth_difference_vs_orleans_pp": 5.6
+    },
+    {
+      "market_id": "22051",
+      "name": "Jefferson Parish",
+      "short_name": "Jefferson",
+      "state": "LA",
+      "population": 431398,
+      "population_change_pct": -2.1,
+      "households": 177003,
+      "median_income": 65252,
+      "source_url": "https://www.census.gov/quickfacts/jeffersonparishlouisiana",
+      "population_vintage": "2025-07-01 V2025",
+      "income_vintage": "2020-2024 ACS (2024 USD)",
+      "reviewed_on": "2026-11-09",
+      "income_difference_vs_orleans_pct": 15.22,
+      "growth_difference_vs_orleans_pp": 3.6
+    },
+    {
+      "market_id": "22071",
+      "name": "Orleans Parish",
+      "short_name": "New Orleans",
+      "state": "LA",
+      "population": 362154,
+      "population_change_pct": -5.7,
+      "households": 155821,
+      "median_income": 56631,
+      "source_url": "https://www.census.gov/quickfacts/orleansparishlouisiana",
+      "population_vintage": "2025-07-01 V2025",
+      "income_vintage": "2020-2024 ACS (2024 USD)",
+      "reviewed_on": "2026-11-09",
+      "income_difference_vs_orleans_pct": 0.0,
+      "growth_difference_vs_orleans_pp": 0.0
+    },
+    {
+      "market_id": "22103",
+      "name": "St. Tammany Parish",
+      "short_name": "Northshore",
+      "state": "LA",
+      "population": 279108,
+      "population_change_pct": 5.5,
+      "households": 105082,
+      "median_income": 81202,
+      "source_url": "https://www.census.gov/quickfacts/sttammanyparishlouisiana",
+      "population_vintage": "2025-07-01 V2025",
+      "income_vintage": "2020-2024 ACS (2024 USD)",
+      "reviewed_on": "2026-11-09",
+      "income_difference_vs_orleans_pct": 43.39,
+      "growth_difference_vs_orleans_pp": 11.2
+    },
+    {
+      "market_id": "28047",
+      "name": "Harrison County",
+      "short_name": "Mississippi Coast",
+      "state": "MS",
+      "population": 217136,
+      "population_change_pct": 4.1,
+      "households": 83358,
+      "median_income": 59479,
+      "source_url": "https://www.census.gov/quickfacts/harrisoncountymississippi",
+      "population_vintage": "2025-07-01 V2025",
+      "income_vintage": "2020-2024 ACS (2024 USD)",
+      "reviewed_on": "2026-11-09",
+      "income_difference_vs_orleans_pct": 5.03,
+      "growth_difference_vs_orleans_pp": 9.8
+    }
+  ],
+  "games": [
+    {
+      "game_id": "0022600223",
+      "franchise": "Pelicans",
+      "opponent": "Nets",
+      "starts_at": "2026-11-12T01:00:00Z",
+      "venue": "Smoothie King Center",
+      "source_url": "https://www.nba.com/pelicans/",
+      "retrieved_at": "2026-11-10T04:00:00.922956+00:00"
+    },
+    {
+      "game_id": "0022600038",
+      "franchise": "Pelicans",
+      "opponent": "Grizzlies",
+      "starts_at": "2026-11-14T01:00:00Z",
+      "venue": "Smoothie King Center",
+      "source_url": "https://www.nba.com/pelicans/",
+      "retrieved_at": "2026-11-10T04:00:00.922956+00:00"
+    },
+    {
+      "game_id": "0022600231",
+      "franchise": "Pelicans",
+      "opponent": "Nuggets",
+      "starts_at": "2026-11-15T00:00:00Z",
+      "venue": "Smoothie King Center",
+      "source_url": "https://www.nba.com/pelicans/",
+      "retrieved_at": "2026-11-10T04:00:00.922956+00:00"
+    },
+    {
+      "game_id": "0022600251",
+      "franchise": "Pelicans",
+      "opponent": "Warriors",
+      "starts_at": "2026-11-17T01:00:00Z",
+      "venue": "Smoothie King Center",
+      "source_url": "https://www.nba.com/pelicans/",
+      "retrieved_at": "2026-11-10T04:00:00.922956+00:00"
+    },
+    {
+      "game_id": "0022600264",
+      "franchise": "Pelicans",
+      "opponent": "Pistons",
+      "starts_at": "2026-11-19T01:00:00Z",
+      "venue": "Smoothie King Center",
+      "source_url": "https://www.nba.com/pelicans/",
+      "retrieved_at": "2026-11-10T04:00:00.922956+00:00"
+    }
+  ],
+  "sources": [
+    {
+      "id": "census",
+      "name": "U.S. Census Bureau \u00b7 QuickFacts",
+      "url": "https://www.census.gov/quickfacts/",
+      "kind": "Observed",
+      "vintage": "V2025 population; 2020\u20132024 ACS households and income",
+      "method": "Six manually reviewed county/parish records; exact page URLs retained per row.",
+      "rights": "U.S. government statistical facts; source attribution retained.",
+      "reviewed_on": "2026-11-09"
+    },
+    {
+      "id": "nba",
+      "name": "New Orleans Pelicans \u00b7 Official schedule",
+      "url": "https://www.nba.com/pelicans/",
+      "kind": "Observed",
+      "vintage": "2026\u201327 season; homepage snapshot",
+      "method": "Extract upcoming New Orleans home games from the official page's structured schedule payload. Limited homepage coverage, not a full-season feed.",
+      "rights": "Factual event metadata only; no photographs, logos, or editorial text redistributed.",
+      "reviewed_on": "2026-11-09"
+    },
+    {
+      "id": "sql",
+      "name": "Market comparison \u00b7 SQL transformation",
+      "url": "https://github.com/tejakusireddy/nola-pulse/blob/main/sql/schema.sql",
+      "kind": "Derived",
+      "vintage": "Model v1.0.0",
+      "method": "Income difference = 100 \u00d7 (market income \u2212 Orleans income) / Orleans income. Growth difference = market population change \u2212 Orleans change, in percentage points.",
+      "rights": "Project transformation; underlying Census facts attributed.",
+      "reviewed_on": "2026-11-09"
+    },
+    {
+      "id": "scenario",
+      "name": "Campaign economics \u00b7 Explicit assumptions",
+      "url": "https://github.com/tejakusireddy/nola-pulse/blob/main/web/lib/scenario.ts",
+      "kind": "Assumed",
+      "vintage": "Scenario model v1.0.0",
+      "method": "Inputs are editable demonstration assumptions, not team campaign results. All outputs are conditional on these inputs.",
+      "rights": "Project model.",
+      "reviewed_on": "2026-11-09"
+    }
+  ],
+  "limitations": [
+    "Regional figures describe residents, not franchise fans or customer penetration.",
+    "ACS household and income estimates cover 2020\u20132024; population estimates are July 2025.",
+    "QuickFacts does not expose margins of error here; small income differences are not tested for significance.",
+    "Ticket inventory, transaction prices, historical resale observations, and campaign outcomes are unavailable.",
+    "No demand forecast, elasticity estimate, or statistically optimal market allocation is claimed."
+  ],
+  "input_sha256": {
+    "games.json": "27b4408fedd327a63bac797c4093692e78e44029cbc9960fcff4487e8cbe5ae4",
+    "markets.csv": "9022f56f0770e5a4c4aaafba706beca3b6b592203927d35776ed1cf1ee2a2696",
+    "sources.json": "cd45589b6074fa014d396525440e9242f37486d05a540ccc705e4192ef5cd93a"
+  }
+}
