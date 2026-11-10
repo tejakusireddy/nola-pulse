@@ -99,7 +99,7 @@ export default function MetricLibrary({
       ],
       [
         "Maximum acquisition cost",
-        r.maxCostPerOrder === null ? "Undefined" : money(r.maxCostPerOrder),
+        r.maxCostPerOrder === null ? "Undefined" : money(r.maxCostPerOrder, 2),
         "Incremental share × media spend × tickets per order × contribution per ticket ÷ total cost.",
         "Set a conditional cost ceiling per attributed order.",
       ],
@@ -107,7 +107,7 @@ export default function MetricLibrary({
         "Minimum contribution per ticket",
         r.minContributionPerTicket === null
           ? "Undefined"
-          : money(r.minContributionPerTicket),
+          : money(r.minContributionPerTicket, 2),
         "Total campaign costs ÷ incremental tickets.",
         "Evaluate discount and fulfillment economics.",
       ],

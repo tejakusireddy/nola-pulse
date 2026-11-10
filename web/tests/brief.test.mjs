@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import intelligence from "../data/intelligence.json" with { type: "json" };
 import { createBrief } from "../lib/brief.ts";
 import { DEFAULT_SCENARIO, evaluate } from "../lib/scenario.ts";
+import saintsSchedule from "../data/saints-schedule.json" with { type: "json" };
 const market = intelligence.markets.find((m) => m.market_id === "22103");
 const game = intelligence.games[0];
 
@@ -45,13 +46,10 @@ test("a recommendation cannot be exported with missing market or game provenance
 });
 
 test("Saints source and identity survive export without inheriting a Pelicans label", () => {
-  const saints = {
-    ...game,
-    franchise: "Saints",
-    opponent: "Carolina Panthers",
-    source_url: "https://www.neworleanssaints.com/schedule/",
-  };
+  const saints = saintsSchedule[0];
   const brief = createBrief(market, saints, DEFAULT_SCENARIO);
   assert.ok(brief.title.startsWith("Saints vs. Carolina Panthers"));
   assert.equal(brief.game.source_url, saints.source_url);
+  assert.equal(brief.game.venue, saints.venue);
+  assert.equal(brief.game.starts_at, saints.starts_at);
 });

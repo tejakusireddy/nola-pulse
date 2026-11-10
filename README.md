@@ -6,6 +6,8 @@ NOLA PULSE connects Gulf Coast market context with upcoming home games and a tra
 
 ## Working experience
 
+- Full Pelicans and Saints editions: hover or focus to preview; select to keep the franchise, typography, and game context.
+- Searchable library of 34 defined commercial measures, separating observed facts, calculations, assumptions, and missing connections.
 - Live public game context for both franchises, with provider attribution, last-checked times, and stale/unavailable states.
 - Upcoming New Orleans home schedules refreshed from the official team websites.
 - Six Census-backed market profiles on an interactive regional map and sortable comparison table.
@@ -42,6 +44,7 @@ CSV exports and the SQLite database are written to the ignored `data/processed/`
 python3 -m unittest discover -s tests
 npm --prefix web test
 npm --prefix web run typecheck
+npm --prefix web run lint
 npm --prefix web run format:check
 npm --prefix web run build
 node web/scripts/validate-powerbi.mjs

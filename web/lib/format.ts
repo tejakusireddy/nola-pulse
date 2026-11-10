@@ -1,10 +1,11 @@
 export const integer = (v: number) =>
   new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(v);
-export const money = (v: number) =>
+export const money = (v: number, decimals = 0) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
   }).format(v);
 export const percent = (v: number, decimals = 1) =>
   `${(v * 100).toFixed(decimals)}%`;

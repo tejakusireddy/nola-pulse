@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, ChevronDown, Radio, RefreshCw } from "lucide-react";
 import type { LiveScore, ScheduleGame } from "../lib/live-normalize";
 import { gameDate, gameTime } from "../lib/format";
@@ -26,9 +26,12 @@ export default function LiveContext({
   const [failed, setFailed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
-  const [now, setNow] = useState(Date.now());
-  async function refresh() {
-    setLoading(true);
+  const [now, setNow] = useState(Date.now);
+  const onRefreshRef = useRef(onRefresh);
+  useEffect(() => {
+    onRefreshRef.current = onRefresh;
+  }, [onRefresh]);
+  const refresh = useCallback(async () => {
     try {
       const response = await fetch("/api/live", {
         signal: AbortSignal.timeout(16_000),
@@ -42,25 +45,26 @@ export default function LiveContext({
       const games = Object.values(data.schedules)
         .filter((f) => !f.stale && Array.isArray(f.data))
         .flatMap((f) => f.data || []);
-      if (games.length) onRefresh(games);
+      if (games.length) onRefreshRef.current(games);
     } catch {
       setFailed(true);
     } finally {
       setLoading(false);
       setNow(Date.now());
     }
-  }
+  }, []);
   useEffect(() => {
-    void refresh();
+    const initial = requestAnimationFrame(() => void refresh());
     const timer = setInterval(() => {
       if (!document.hidden) void refresh();
     }, 60_000);
     const clock = setInterval(() => setNow(Date.now()), 15_000);
     return () => {
+      cancelAnimationFrame(initial);
       clearInterval(timer);
       clearInterval(clock);
     };
-  }, []);
+  }, [refresh]);
   const time = (date: string) =>
     date
       ? new Intl.DateTimeFormat("en-US", {
@@ -81,7 +85,13 @@ export default function LiveContext({
           <Radio size={13} />
           FRANCHISE GAME CONTEXT
         </span>
-        <button onClick={() => void refresh()} disabled={loading}>
+        <button
+          onClick={() => {
+            setLoading(true);
+            void refresh();
+          }}
+          disabled={loading}
+        >
           <RefreshCw size={11} className={loading ? "refreshing" : ""} />
           {loading ? "Checking sources" : "Refresh"}
         </button>

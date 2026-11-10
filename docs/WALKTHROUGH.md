@@ -20,11 +20,13 @@ Choose a different market on the map or in the comparison table. Observe the dem
 
 ## 2:05 — Connect both franchises
 
-Inspect the current game-context cards and source timestamps. Expand the official home schedules and select a Saints home game. The selected franchise, venue, date, and exported brief update together. The commercial assumptions remain explicit across both franchises.
+Hover or focus Saints in the header to preview the black and gold edition with Saira typography. Select it to keep the edition; the home-game context updates with it. Inspect the current game-context cards and source timestamps. Expand the official home schedules and select a Saints home game. The selected franchise, venue, date, and exported brief update together. The commercial assumptions remain explicit across both franchises.
 
 ## 2:30 — Show how the decision becomes measurable
 
 Open the test plan: confirm inventory and net margin, define eligible audiences, randomize a treatment and holdout, size the experiment using baseline conversion, and measure incremental contribution. Export the JSON brief or use Print / save PDF. The brief retains the scenario, source references, reversal threshold, stress ranges, and measurement plan.
+
+Open Metric library and search for a measure. Expand its definition to inspect the source or transformation. Data connections lists the inputs required for attendance, inventory, sales, causal lift, pricing and demand forecasts. None are filled with fabricated zeros.
 
 ## Technical follow-up
 

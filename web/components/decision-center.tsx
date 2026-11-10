@@ -2,13 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import LiveContext from "./live-context";
+import FranchiseSwitch, { useSelectedFranchise } from "./franchise-switch";
+import Image from "next/image";
+import type { Franchise } from "./franchise-switch";
+import MetricLibrary from "./metric-library";
+import saintsSchedule from "../data/saints-schedule.json";
 import type { ScheduleGame } from "../lib/live-normalize";
 import {
   Activity,
   ArrowRight,
   ArrowUpRight,
   BarChart3,
-  BookOpen,
   Check,
   ChevronDown,
   ChevronRight,
@@ -16,9 +20,7 @@ import {
   Download,
   ExternalLink,
   FileText,
-  Layers3,
   MapPin,
-  Menu,
   RotateCcw,
   ShieldCheck,
   SlidersHorizontal,
@@ -48,7 +50,7 @@ import {
   signed,
 } from "../lib/format";
 
-type View = "decision" | "markets" | "evidence";
+type View = "decision" | "markets" | "metrics" | "evidence";
 const MARKET_POSITIONS: Record<string, [number, number]> = {
   "22071": [-90.07, 29.95],
   "22051": [-90.18, 29.99],
@@ -355,11 +357,33 @@ export default function DecisionCenter() {
   const [market, setMarket] = useState(
     intelligence.markets.find((m) => m.market_id === "22103")!,
   );
-  const [game, setGame] = useState<Game>(INITIAL_GAME);
-  const [games, setGames] = useState<Game[]>(intelligence.games);
+  const [franchise, setFranchise] = useSelectedFranchise();
+  const [preview, setPreview] = useState<Franchise | null>(null);
+  const activeFranchise = preview ?? franchise;
+  const [chosenGame, setChosenGame] = useState<Game>(INITIAL_GAME);
+  const [games, setGames] = useState<Game[]>([
+    ...intelligence.games,
+    ...saintsSchedule,
+  ]);
+  const franchiseGames = games.filter((g) => g.franchise === activeFranchise);
+  const game =
+    chosenGame.franchise === activeFranchise
+      ? chosenGame
+      : (franchiseGames[0] ??
+        (activeFranchise === "Saints" ? saintsSchedule[0] : INITIAL_GAME));
+  const commitFranchise = (team: Franchise) => {
+    setFranchise(team);
+    setPreview(null);
+  };
+  const setGame = (next: Game) => {
+    setChosenGame(next);
+    commitFranchise(next.franchise as Franchise);
+  };
+  useEffect(() => {
+    document.documentElement.dataset.franchise = activeFranchise.toLowerCase();
+  }, [activeFranchise]);
   const [scenario, setScenario] = useState<Scenario>({ ...DEFAULT_SCENARIO });
   const [exportOpen, setExportOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const [experimentOpen, setExperimentOpen] = useState(false);
   const [tableSort, setTableSort] = useState<
@@ -385,7 +409,6 @@ export default function DecisionCenter() {
     const escape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setExportOpen(false);
-        setMenuOpen(false);
         setExperimentOpen(false);
       }
     };
@@ -404,11 +427,13 @@ export default function DecisionCenter() {
   }, [notice]);
 
   const receiveSchedule = (incoming: ScheduleGame[]) => {
-    setGames(
-      incoming.sort(
-        (a, b) => Date.parse(a.starts_at) - Date.parse(b.starts_at),
-      ),
-    );
+    setGames((previous) => {
+      const refreshedTeams = new Set(incoming.map((g) => g.franchise));
+      return [
+        ...incoming,
+        ...previous.filter((g) => !refreshedTeams.has(g.franchise)),
+      ].sort((a, b) => Date.parse(a.starts_at) - Date.parse(b.starts_at));
+    });
   };
   const selectGame = (selected: ScheduleGame) => {
     setGame(selected);
@@ -417,7 +442,6 @@ export default function DecisionCenter() {
   };
   const selectView = (v: View) => {
     setView(v);
-    setMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const exportBrief = () => {
@@ -457,127 +481,87 @@ export default function DecisionCenter() {
       <a className="skip-link" href="#main-content">
         Skip to decision
       </a>
-      <aside className={`sidebar ${menuOpen ? "mobile-open" : ""}`}>
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            selectView("decision");
-          }}
-          className="wordmark"
-          aria-label="NOLA PULSE decision center"
-        >
-          <Activity size={29} strokeWidth={1.8} />
-          <span>
-            NOLA<span className="gold">PULSE</span>
-            <small>STRATEGY INTELLIGENCE</small>
-          </span>
-        </a>
-        <div className="workspace-label">COMMERCIAL WORKSPACE</div>
-        <nav aria-label="Primary navigation">
-          {(
-            [
-              ["decision", "Decision center", Target],
-              ["markets", "Market landscape", MapPin],
-              ["evidence", "Evidence & methods", Layers3],
-            ] as const
-          ).map(([key, label, Icon]) => (
-            <button
-              key={key}
-              className={view === key ? "nav-item active" : "nav-item"}
-              aria-current={view === key ? "page" : undefined}
-              onClick={() => selectView(key)}
-            >
-              <Icon size={18} />
-              {label}
-              {view === key && <ChevronRight size={15} />}
-            </button>
-          ))}
-        </nav>
-        <div className="sidebar-divider" />
-        <div className="workspace-label">FRANCHISE COVERAGE</div>
-        <div className="franchise">
-          <span className="team-stripe pelicans" />
-          <div>
-            New Orleans Pelicans<small>First campaign investigation</small>
-          </div>
-          <span className="coverage-dot" />
-        </div>
-        <div className="franchise">
-          <span className="team-stripe saints" />
-          <div>
-            New Orleans Saints<small>Live schedule + regional context</small>
-          </div>
-        </div>
-        <div className="sidebar-bottom">
-          <div className="snapshot-status">
-            <span />
-            RESEARCH SNAPSHOT
-          </div>
-          <strong>November 9, 2026</strong>
-          <p>
-            Public market evidence.
-            <br />
-            Explicit commercial assumptions.
-          </p>
-          <button
-            className="sidebar-method"
-            onClick={() => selectView("evidence")}
+      <header className="masthead">
+        <div className="masthead-inner">
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              selectView("decision");
+            }}
+            className="wordmark"
+            aria-label="NOLA PULSE decision center"
           >
-            <BookOpen size={15} />
-            Read the methodology
-            <ArrowUpRight size={14} />
-          </button>
+            <Activity size={32} strokeWidth={1.6} />
+            <span>
+              NOLA<span className="gold">PULSE</span>
+              <small>MARKET INTELLIGENCE</small>
+            </span>
+          </a>
+          <FranchiseSwitch
+            selected={franchise}
+            preview={preview}
+            onPreview={setPreview}
+            onSelect={commitFranchise}
+          />
+          <div className="workspace-status">
+            <span className="status-dot" /> PUBLIC EVIDENCE
+            <small>Independent strategy workspace</small>
+          </div>
         </div>
-        <p className="independent">INDEPENDENT PORTFOLIO PROJECT</p>
-      </aside>
+        <div className="nav-bar">
+          <nav aria-label="Primary navigation">
+            {(
+              [
+                ["decision", "Decision room", Target],
+                ["markets", "Market landscape", MapPin],
+                ["metrics", "Metric library", BarChart3],
+                ["evidence", "Evidence & methods", ShieldCheck],
+              ] as const
+            ).map(([key, label, Icon]) => (
+              <button
+                key={key}
+                className={view === key ? "nav-item active" : "nav-item"}
+                aria-current={view === key ? "page" : undefined}
+                onClick={() => selectView(key)}
+              >
+                <Icon size={16} />
+                {label}
+              </button>
+            ))}
+          </nav>
+          <span className="nav-edition">
+            {activeFranchise.toUpperCase()} EDITION <span>/</span> MODEL{" "}
+            {MODEL_VERSION}
+          </span>
+        </div>
+      </header>
       <div className="workspace">
-        <header className="topbar">
-          <div className="breadcrumb">
-            <button
-              className="mobile-toggle"
-              onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Toggle navigation"
-            >
-              <Menu size={21} />
-            </button>
-            <span>Commercial intelligence</span>
-            <ChevronRight size={13} />
-            <strong>
-              {view === "decision"
-                ? "Campaign decision"
-                : view === "markets"
-                  ? "Market landscape"
-                  : "Evidence & methods"}
-            </strong>
-          </div>
-          <div className="topbar-right">
-            <span className="version">MODEL {MODEL_VERSION}</span>
-            <div className="avatar" aria-label="NOLA PULSE workspace">
-              NP
-            </div>
-          </div>
-        </header>
         <main id="main-content" className="main-content">
           <div className="page-header">
             <div>
               <div className="eyebrow">
                 <span className="eyebrow-line" />
-                SAINTS + PELICANS · GULF COAST
+                NEW ORLEANS {activeFranchise.toUpperCase()} · STRATEGY &
+                ANALYTICS
               </div>
               <h1>
                 {view === "decision"
-                  ? "The next move, made clear."
+                  ? "The next move starts here."
                   : view === "markets"
                     ? "A market is more than a number."
-                    : "Built to be questioned."}
+                    : view === "metrics"
+                      ? "The numbers behind the move."
+                      : "Built to be questioned."}
               </h1>
               <p>
                 {view === "decision"
                   ? "One campaign. Traceable evidence. A decision you can challenge."
                   : view === "markets"
                     ? "Compare regional context before making a commercial commitment."
-                    : "Inspect the facts, assumptions, and limits behind the recommendation."}
+                    : view === "metrics"
+                      ? "Commercial measures, their definitions, and the evidence needed to use them."
+                      : "Inspect the facts, assumptions, and limits behind the recommendation."}
               </p>
             </div>
             <div className="export-control" ref={exportRef}>
@@ -625,6 +609,12 @@ export default function DecisionCenter() {
           )}
           {view === "evidence" ? (
             <Sources market={market} />
+          ) : view === "metrics" ? (
+            <MetricLibrary
+              market={market}
+              scenario={scenario}
+              franchise={activeFranchise}
+            />
           ) : (
             <>
               {view === "decision" && (
@@ -642,9 +632,9 @@ export default function DecisionCenter() {
                           )
                         }
                       >
-                        {(games.some((g) => g.game_id === game.game_id)
-                          ? games
-                          : [game, ...games]
+                        {(franchiseGames.some((g) => g.game_id === game.game_id)
+                          ? franchiseGames
+                          : [game, ...franchiseGames]
                         ).map((g) => (
                           <option key={g.game_id} value={g.game_id}>
                             {g.franchise} vs. {g.opponent} ·{" "}
@@ -678,9 +668,7 @@ export default function DecisionCenter() {
                       <ChevronDown size={14} />
                     </label>
                     <span className="tag snapshot-tag">
-                      {game.source_url.includes("/schedule")
-                        ? "Refreshed schedule"
-                        : "Research snapshot"}
+                      Schedule checked {gameDate(game.retrieved_at)}
                     </span>
                   </div>
                   <section
@@ -688,6 +676,15 @@ export default function DecisionCenter() {
                     aria-labelledby="recommendation-title"
                   >
                     <div className="hero-main">
+                      <Image
+                        unoptimized
+                        width={300}
+                        height={300}
+                        className="hero-team-mark"
+                        src={`/brand/${activeFranchise.toLowerCase()}.svg`}
+                        alt=""
+                        aria-hidden="true"
+                      />
                       <div className="hero-topline">
                         <span className="hero-kicker">
                           <Target size={14} />
@@ -704,9 +701,9 @@ export default function DecisionCenter() {
                       <h2 id="recommendation-title">
                         {result.status === "positive" ? (
                           <>
-                            Prepare a {market.short_name} test.
+                            Test {market.short_name}.
                             <br />
-                            Keep scale conditional.
+                            Earn the right to scale.
                           </>
                         ) : result.status === "inactive" ? (
                           <>
@@ -776,6 +773,48 @@ export default function DecisionCenter() {
                       </a>
                     </div>
                   </section>
+                  <div
+                    className="decision-kpis"
+                    aria-label="Campaign decision metrics"
+                  >
+                    {[
+                      [
+                        "Incremental tickets",
+                        result.incrementalTickets.toFixed(1),
+                        "Modeled average · not tickets sold",
+                      ],
+                      [
+                        "Break-even incremental orders",
+                        result.breakEvenOrders === null
+                          ? "—"
+                          : result.breakEvenOrders.toFixed(1),
+                        "Total campaign cost ÷ contribution per order",
+                      ],
+                      [
+                        "Maximum acquisition cost",
+                        result.maxCostPerOrder === null
+                          ? "—"
+                          : money(result.maxCostPerOrder, 2),
+                        "Per attributed order at break-even",
+                      ],
+                      [
+                        "Incrementality headroom",
+                        result.marginOfSafety === null
+                          ? "—"
+                          : signed(result.marginOfSafety * 100, " pp"),
+                        "Assumed share minus reversal threshold",
+                      ],
+                    ].map(([label, value, note]) => (
+                      <article key={label}>
+                        <span>
+                          {label}
+                          <Tag kind="Derived" />
+                        </span>
+                        <strong>{value}</strong>
+                        <small>{note}</small>
+                      </article>
+                    ))}
+                  </div>
                   <div className="evidence-strip">
                     <ShieldCheck size={16} />
                     <span>
