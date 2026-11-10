@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import LiveContext from "./live-context";
 import FranchiseSwitch, { useSelectedFranchise } from "./franchise-switch";
-import Image from "next/image";
+import RegionalMap from "./regional-map";
+import VenueContext from "./venue-context";
+import ScenarioComparison from "./scenario-comparison";
 import type { Franchise } from "./franchise-switch";
 import MetricLibrary from "./metric-library";
 import saintsSchedule from "../data/saints-schedule.json";
@@ -28,7 +30,6 @@ import {
   X,
 } from "lucide-react";
 import intelligence from "../data/intelligence.json";
-import geography from "../data/geography.json";
 import {
   ASSUMPTIONS,
   DEFAULT_SCENARIO,
@@ -50,19 +51,7 @@ import {
   signed,
 } from "../lib/format";
 
-type View = "decision" | "markets" | "metrics" | "evidence";
-const MARKET_POSITIONS: Record<string, [number, number]> = {
-  "22071": [-90.07, 29.95],
-  "22051": [-90.18, 29.99],
-  "22103": [-90.0, 30.45],
-  "22033": [-91.14, 30.45],
-  "28047": [-89.08, 30.4],
-  "01097": [-88.04, 30.69],
-};
-const project = ([lon, lat]: [number, number]) => [
-  (lon + 93.9) * 130,
-  (33.25 - lat) * 145,
-];
+type View = "decision" | "markets" | "simulator" | "metrics" | "evidence";
 const INITIAL_GAME =
   intelligence.games.find((g) => g.opponent === "Nuggets") ||
   intelligence.games[0];
@@ -73,115 +62,19 @@ function Tag({ kind }: { kind: string }) {
   return <span className={`tag tag-${kind.toLowerCase()}`}>{kind}</span>;
 }
 
-function MarketMap({
-  selected,
-  onSelect,
+function ReversalChart({
+  scenario,
+  baseline,
 }: {
-  selected: Market;
-  onSelect: (m: Market) => void;
+  scenario: Scenario;
+  baseline?: Scenario;
 }) {
-  return (
-    <div className="market-map">
-      <svg
-        viewBox="0 0 850 610"
-        role="group"
-        aria-label="Interactive Gulf Coast candidate markets. Points show approximate representative city locations, not catchment boundaries."
-      >
-        <defs>
-          <pattern
-            id="map-grid"
-            width="25"
-            height="25"
-            patternUnits="userSpaceOnUse"
-          >
-            <circle cx="1" cy="1" r="0.7" fill="var(--map-dot)" />
-          </pattern>
-        </defs>
-        <rect width="850" height="610" fill="url(#map-grid)" />
-        {geography.states.map((s) => (
-          <path key={s.name} d={s.path} className="state-shape" />
-        ))}
-        <text x="145" y="225" className="state-label">
-          LOUISIANA
-        </text>
-        <text x="515" y="175" className="state-label">
-          MISSISSIPPI
-        </text>
-        <text x="735" y="150" className="state-label">
-          ALABAMA
-        </text>
-        <text x="600" y="555" className="water-label">
-          GULF COAST
-        </text>
-        {intelligence.markets.map((m) => {
-          const [x, y] = project(MARKET_POSITIONS[m.market_id]);
-          const active = m.market_id === selected.market_id;
-          const local = m.market_id === "22071" || m.market_id === "22051";
-          const labelX = m.market_id === "22051" ? x - 100 : x + 17;
-          const labelY =
-            m.market_id === "22071"
-              ? y + 36
-              : m.market_id === "22051"
-                ? y - 12
-                : y - 16;
-          return (
-            <g
-              key={m.market_id}
-              role="button"
-              tabIndex={0}
-              aria-label={`Select ${m.name}`}
-              aria-pressed={active}
-              onClick={() => onSelect(m)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  onSelect(m);
-                }
-              }}
-              className={`map-marker ${active ? "is-selected" : ""}`}
-            >
-              <circle
-                cx={x}
-                cy={y}
-                r={active ? 21 : 15}
-                className="marker-halo"
-              />
-              <circle
-                cx={x}
-                cy={y}
-                r={active ? 7 : 5}
-                className={local ? "marker-local" : "marker-region"}
-              />
-              <text x={labelX} y={labelY} className="marker-label">
-                {m.short_name}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-      <div className="map-legend">
-        <span>
-          <i className="legend-dot local" />
-          Local reference
-        </span>
-        <span>
-          <i className="legend-dot regional" />
-          Regional candidate
-        </span>
-      </div>
-      <p className="map-note">
-        City anchors are approximate. Census figures cover the named parish or
-        county.
-      </p>
-    </div>
-  );
-}
-
-function ReversalChart({ scenario }: { scenario: Scenario }) {
   const points = contributionCurve(scenario);
+  const baselinePoints = baseline ? contributionCurve(baseline) : null;
   const current = evaluate(scenario);
-  const low = Math.min(points[0].net, -1000),
-    high = Math.max(points[100].net, 1000);
+  const baselineResult = baseline ? evaluate(baseline) : null;
+  const low = Math.min(points[0].net, baselinePoints?.[0].net ?? 0, -1000),
+    high = Math.max(points[100].net, baselinePoints?.[100].net ?? 0, 1000);
   const x = (share: number) => 64 + share * 610;
   const y = (net: number) => 220 - ((net - low) / (high - low)) * 178;
   const line = points
@@ -193,7 +86,7 @@ function ReversalChart({ scenario }: { scenario: Scenario }) {
       className="reversal-chart"
       viewBox="0 0 710 275"
       role="img"
-      aria-label={`Net contribution by incremental share. Current result ${money(current.netContribution)}. Break-even ${threshold === null ? "unavailable" : percent(threshold)}.`}
+      aria-label={`Net contribution by incremental share. Solid line: current scenario. Dashed line: pinned comparison. Current result ${money(current.netContribution)}. Break-even ${threshold === null ? "unavailable" : percent(threshold)}.`}
     >
       {[low, 0, high].map((v, i) => (
         <g key={i}>
@@ -213,6 +106,14 @@ function ReversalChart({ scenario }: { scenario: Scenario }) {
         d={`${line} L${x(1)},${y(0)} L${x(0)},${y(0)} Z`}
         className="chart-area"
       />
+      {baselinePoints && (
+        <path
+          d={baselinePoints
+            .map((p, i) => `${i ? "L" : "M"}${x(p.share)},${y(p.net)}`)
+            .join(" ")}
+          className="baseline-line"
+        />
+      )}
       <path d={line} className="contribution-line" />
       {threshold !== null && threshold <= 1 && (
         <g>
@@ -241,6 +142,14 @@ function ReversalChart({ scenario }: { scenario: Scenario }) {
           </text>
         </g>
       )}
+      {baseline && baselineResult && (
+        <circle
+          cx={x(baseline.incrementality)}
+          cy={y(baselineResult.netContribution)}
+          r="6"
+          className="baseline-point"
+        />
+      )}
       <circle
         cx={x(scenario.incrementality)}
         cy={y(current.netContribution)}
@@ -259,7 +168,8 @@ function ReversalChart({ scenario }: { scenario: Scenario }) {
         </text>
       ))}
       <text x="370" y="269" textAnchor="middle" className="chart-caption">
-        Incremental share of attributed orders · all other inputs held fixed
+        Incremental share · solid / filled: current · dashed / hollow:
+        comparison
       </text>
     </svg>
   );
@@ -393,6 +303,7 @@ export default function DecisionCenter() {
     document.documentElement.dataset.franchise = activeFranchise.toLowerCase();
   }, [activeFranchise]);
   const [scenario, setScenario] = useState<Scenario>({ ...DEFAULT_SCENARIO });
+  const [baseline, setBaseline] = useState<Scenario>({ ...DEFAULT_SCENARIO });
   const [exportOpen, setExportOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const [experimentOpen, setExperimentOpen] = useState(false);
@@ -455,7 +366,7 @@ export default function DecisionCenter() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const exportBrief = () => {
-    const brief = createBrief(market, game, scenario);
+    const brief = createBrief(market, game, scenario, baseline);
     download(
       `nola-pulse-${market.market_id}-${game.game_id}.json`,
       JSON.stringify(brief, null, 2),
@@ -523,8 +434,9 @@ export default function DecisionCenter() {
           <nav aria-label="Primary navigation">
             {(
               [
-                ["decision", "Decision room", Target],
-                ["markets", "Market landscape", MapPin],
+                ["decision", "Overview", Target],
+                ["markets", "Markets", MapPin],
+                ["simulator", "Simulator", SlidersHorizontal],
                 ["metrics", "Metric library", BarChart3],
                 ["evidence", "Evidence & methods", ShieldCheck],
               ] as const
@@ -557,21 +469,25 @@ export default function DecisionCenter() {
               </div>
               <h1>
                 {view === "decision"
-                  ? "The next move starts here."
+                  ? "Market intelligence"
                   : view === "markets"
-                    ? "A market is more than a number."
-                    : view === "metrics"
-                      ? "The numbers behind the move."
-                      : "Built to be questioned."}
+                    ? "Regional comparison"
+                    : view === "simulator"
+                      ? "Campaign simulator"
+                      : view === "metrics"
+                        ? "Metric library"
+                        : "Evidence & methods"}
               </h1>
               <p>
                 {view === "decision"
-                  ? "One campaign. Traceable evidence. A decision you can challenge."
+                  ? "Six candidate markets. One commercial decision. Every assumption visible."
                   : view === "markets"
                     ? "Compare regional context before making a commercial commitment."
-                    : view === "metrics"
-                      ? "Commercial measures, their definitions, and the evidence needed to use them."
-                      : "Inspect the facts, assumptions, and limits behind the recommendation."}
+                    : view === "simulator"
+                      ? "Make the trade-offs explicit. Compare assumptions and find the point where the decision changes."
+                      : view === "metrics"
+                        ? "Commercial measures, their definitions, and the evidence needed to use them."
+                        : "Inspect the facts, assumptions, and limits behind the recommendation."}
               </p>
             </div>
             <div className="export-control" ref={exportRef}>
@@ -614,9 +530,6 @@ export default function DecisionCenter() {
               {evidenceError}
             </div>
           )}
-          {view === "markets" && (
-            <LiveContext onSelect={selectGame} onRefresh={receiveSchedule} />
-          )}
           {view === "evidence" ? (
             <Sources market={market} franchise={activeFranchise} />
           ) : view === "metrics" ? (
@@ -627,388 +540,67 @@ export default function DecisionCenter() {
             />
           ) : (
             <>
-              {view === "decision" && (
-                <>
-                  <div className="context-bar">
-                    <span className="context-label">INVESTIGATE</span>
-                    <label>
-                      <span className="sr-only">Select home game</span>
-                      <select
-                        aria-label="Select home game"
-                        value={game.game_id}
-                        onChange={(e) =>
-                          setGame(
-                            games.find((g) => g.game_id === e.target.value)!,
-                          )
-                        }
-                      >
-                        {(franchiseGames.some((g) => g.game_id === game.game_id)
-                          ? franchiseGames
-                          : [game, ...franchiseGames]
-                        ).map((g) => (
-                          <option key={g.game_id} value={g.game_id}>
-                            {g.franchise} vs. {g.opponent} ·{" "}
-                            {gameDate(g.starts_at)}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown size={14} />
-                    </label>
-                    <span className="context-separator" />
-                    <label>
-                      <MapPin size={14} />
-                      <span className="sr-only">Select candidate market</span>
-                      <select
-                        aria-label="Select candidate market"
-                        value={market.market_id}
-                        onChange={(e) =>
-                          setMarket(
-                            intelligence.markets.find(
-                              (m) => m.market_id === e.target.value,
-                            )!,
-                          )
-                        }
-                      >
-                        {intelligence.markets.map((m) => (
-                          <option key={m.market_id} value={m.market_id}>
-                            {m.name}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown size={14} />
-                    </label>
-                    <span className="tag snapshot-tag">
-                      Schedule checked {gameDate(game.retrieved_at)}
-                    </span>
-                  </div>
-                  <section
-                    className="decision-hero"
-                    aria-labelledby="recommendation-title"
+              <div className="context-bar">
+                <span className="context-label">INVESTIGATE</span>
+                <label>
+                  <span className="sr-only">Select home game</span>
+                  <select
+                    aria-label="Select home game"
+                    value={game.game_id}
+                    onChange={(e) =>
+                      setGame(games.find((g) => g.game_id === e.target.value)!)
+                    }
                   >
-                    <div className="hero-main">
-                      <Image
-                        unoptimized
-                        width={300}
-                        height={300}
-                        className="hero-team-mark"
-                        src={`/brand/${activeFranchise.toLowerCase()}.svg`}
-                        alt=""
-                        aria-hidden="true"
-                      />
-                      <div className="hero-topline">
-                        <span className="hero-kicker">
-                          <Target size={14} />
-                          CAMPAIGN DECISION
-                        </span>
-                        <span className="hero-status">
-                          {result.status === "positive"
-                            ? "CONDITIONAL TEST"
-                            : result.status === "inactive"
-                              ? "NO MEDIA SPEND"
-                              : "REVISE BEFORE LAUNCH"}
-                        </span>
-                      </div>
-                      <h2 id="recommendation-title">
-                        {result.status === "positive" ? (
-                          <>
-                            Test {market.short_name}.
-                            <br />
-                            Earn the right to scale.
-                          </>
-                        ) : result.status === "inactive" ? (
-                          <>
-                            Keep the no-campaign
-                            <br />
-                            alternative on the table.
-                          </>
-                        ) : (
-                          <>
-                            The current economics
-                            <br />
-                            don’t clear the bar.
-                          </>
-                        )}
-                      </h2>
-                      <p>
-                        Evaluate a bounded <strong>{market.short_name}</strong>{" "}
-                        ticket campaign for{" "}
-                        <strong>
-                          {game.franchise} vs. {game.opponent}
-                        </strong>
-                        .{" "}
-                        {result.status === "positive"
-                          ? "The scenario clears break-even; validate the assumptions before committing."
-                          : "Revise the assumptions or retain the no-campaign alternative."}
-                      </p>
-                      <div className="hero-footer">
-                        <span>
-                          <span className="team-dot" />
-                          {gameDate(game.starts_at)} ·{" "}
-                          {gameTime(game.starts_at)}
-                        </span>
-                        <span>{game.venue}</span>
-                      </div>
-                    </div>
-                    <div className="hero-economics">
-                      <span className="hero-metric-label">
-                        CONDITIONAL NET CONTRIBUTION
-                      </span>
-                      <strong className="hero-value">
-                        {money(result.netContribution)}
-                      </strong>
-                      <span className="hero-metric-note">
-                        after {money(result.totalCosts)} in campaign costs
-                      </span>
-                      <div className="hero-rule" />
-                      <div className="reversal-preview">
-                        <span>WHAT CHANGES THE DECISION?</span>
-                        <p>
-                          {threshold === null ? (
-                            "No finite break-even threshold at these inputs."
-                          ) : threshold > 1 ? (
-                            <>
-                              Even <strong>100%</strong> incrementality cannot
-                              break even.
-                            </>
-                          ) : (
-                            <>
-                              Below <strong>{percent(threshold)}</strong>{" "}
-                              incrementality, this campaign loses money.
-                            </>
-                          )}
-                        </p>
-                      </div>
-                      <a href="#scenario-lab">
-                        Challenge the assumptions <ArrowRight size={16} />
-                      </a>
-                    </div>
-                  </section>
-                  <div
-                    className="decision-kpis"
-                    aria-label="Campaign decision metrics"
-                  >
-                    {[
-                      [
-                        "Incremental tickets",
-                        result.incrementalTickets.toFixed(1),
-                        "Modeled average · not tickets sold",
-                      ],
-                      [
-                        "Break-even incremental orders",
-                        result.breakEvenOrders === null
-                          ? "—"
-                          : result.breakEvenOrders.toFixed(1),
-                        "Total campaign cost ÷ contribution per order",
-                      ],
-                      [
-                        "Maximum acquisition cost",
-                        result.maxCostPerOrder === null
-                          ? "—"
-                          : money(result.maxCostPerOrder, 2),
-                        "Per attributed order at break-even",
-                      ],
-                      [
-                        "Incrementality headroom",
-                        result.marginOfSafety === null
-                          ? "—"
-                          : signed(result.marginOfSafety * 100, " pp"),
-                        "Assumed share minus reversal threshold",
-                      ],
-                    ].map(([label, value, note]) => (
-                      <article key={label}>
-                        <span>
-                          {label}
-                          <Tag kind="Derived" />
-                        </span>
-                        <strong>{value}</strong>
-                        <small>{note}</small>
-                      </article>
+                    {(franchiseGames.some((g) => g.game_id === game.game_id)
+                      ? franchiseGames
+                      : [game, ...franchiseGames]
+                    ).map((g) => (
+                      <option key={g.game_id} value={g.game_id}>
+                        {g.franchise} vs. {g.opponent} · {gameDate(g.starts_at)}
+                      </option>
                     ))}
-                  </div>
-                  <div className="evidence-strip">
-                    <ShieldCheck size={16} />
-                    <span>
-                      <strong>Evidence boundary</strong> · Regional facts are
-                      observed. Campaign economics are assumed. Inventory and
-                      conversion must be supplied before launch.
-                    </span>
-                    <button onClick={() => selectView("evidence")}>
-                      Inspect sources
-                      <ArrowUpRight size={14} />
-                    </button>
-                  </div>
-                </>
-              )}
-              {view === "decision" && (
-                <LiveContext
-                  onSelect={selectGame}
-                  onRefresh={receiveSchedule}
-                />
-              )}
-              <div className="landscape-grid">
-                <section className="panel map-panel">
-                  <div className="panel-heading">
-                    <div>
-                      <span className="eyebrow">01 / WHERE TO INVESTIGATE</span>
-                      <h2>The Gulf Coast landscape</h2>
-                    </div>
-                    <Tag kind="Observed" />
-                  </div>
-                  <MarketMap selected={market} onSelect={setMarket} />
-                </section>
-                <section className="panel market-detail">
-                  <div className="market-detail-heading">
-                    <span className="eyebrow">SELECTED MARKET</span>
-                    <MapPin size={18} />
-                  </div>
-                  <h2>{market.name}</h2>
-                  <p className="muted">
-                    {market.state} · County-level evidence
-                  </p>
-                  <div className="market-stat">
-                    <span>
-                      Residents <Tag kind="Observed" />
-                    </span>
-                    <strong>{integer(market.population)}</strong>
-                    <small>July 2025 population estimate</small>
-                  </div>
-                  <div className="market-stat-row">
-                    <div>
-                      <span>Population change</span>
-                      <strong
-                        className={
-                          market.population_change_pct >= 0
-                            ? "positive-text"
-                            : "negative-text"
-                        }
-                      >
-                        {signed(market.population_change_pct, "%")}
-                      </strong>
-                      <small>2020 base → July 2025</small>
-                    </div>
-                    <div>
-                      <span>Median household income</span>
-                      <strong>{money(market.median_income)}</strong>
-                      <small>2020–2024 · 2024 dollars</small>
-                    </div>
-                  </div>
-                  <div className="market-observation">
-                    <span className="tiny-label">
-                      READ THE SIGNAL CORRECTLY
-                    </span>
-                    <p>
-                      {market.market_id === "22071" ? (
-                        "Orleans is the local reference. Its demographics describe residents, not existing buyers or campaign reach."
-                      ) : (
-                        <>
-                          Income is{" "}
-                          <strong>
-                            {Math.abs(
-                              market.income_difference_vs_orleans_pct,
-                            ).toFixed(1)}
-                            %{" "}
-                            {market.income_difference_vs_orleans_pct >= 0
-                              ? "above"
-                              : "below"}
-                          </strong>{" "}
-                          Orleans. That describes market context; it does not
-                          establish purchase intent or an acquisition advantage.
-                        </>
-                      )}
-                    </p>
-                  </div>
-                  <a
-                    href={market.source_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-link"
+                  </select>
+                  <ChevronDown size={14} />
+                </label>
+                <span className="context-separator" />
+                <label>
+                  <MapPin size={14} />
+                  <span className="sr-only">Select candidate market</span>
+                  <select
+                    aria-label="Select candidate market"
+                    value={market.market_id}
+                    onChange={(e) =>
+                      setMarket(
+                        intelligence.markets.find(
+                          (m) => m.market_id === e.target.value,
+                        )!,
+                      )
+                    }
                   >
-                    Census QuickFacts <ExternalLink size={13} />
-                  </a>
-                </section>
+                    {intelligence.markets.map((m) => (
+                      <option key={m.market_id} value={m.market_id}>
+                        {m.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} />
+                </label>
+                <span className="tag snapshot-tag">
+                  Schedule checked {gameDate(game.retrieved_at)}
+                </span>
               </div>
-              {view === "markets" && (
-                <section className="panel comparison-table">
-                  <div className="panel-heading">
-                    <div>
-                      <span className="eyebrow">COMPARE THE CONTEXT</span>
-                      <h2>Six markets. No invented opportunity score.</h2>
-                    </div>
-                    <label className="sort-control">
-                      Sort by{" "}
-                      <select
-                        value={tableSort}
-                        onChange={(e) =>
-                          setTableSort(e.target.value as typeof tableSort)
-                        }
-                      >
-                        <option value="population_change_pct">
-                          Population change
-                        </option>
-                        <option value="population">Population</option>
-                        <option value="median_income">Median income</option>
-                      </select>
-                    </label>
-                  </div>
-                  <div className="table-scroll">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Market</th>
-                          <th>Population</th>
-                          <th>Change</th>
-                          <th>Households</th>
-                          <th>Median income</th>
-                          <th>Source</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {[...intelligence.markets]
-                          .sort((a, b) => b[tableSort] - a[tableSort])
-                          .map((m) => (
-                            <tr
-                              key={m.market_id}
-                              className={
-                                m.market_id === market.market_id
-                                  ? "selected-row"
-                                  : ""
-                              }
-                            >
-                              <td>
-                                <button onClick={() => setMarket(m)}>
-                                  {m.name}
-                                  <span>
-                                    {m.state} · {m.market_id}
-                                  </span>
-                                </button>
-                              </td>
-                              <td>{integer(m.population)}</td>
-                              <td>{signed(m.population_change_pct, "%")}</td>
-                              <td>{integer(m.households)}</td>
-                              <td>{money(m.median_income)}</td>
-                              <td>
-                                <a
-                                  href={m.source_url}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  aria-label={`Census source for ${m.name}`}
-                                >
-                                  <ExternalLink size={14} />
-                                </a>
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <p className="muted table-footnote">
-                    Population: July 2025. Households and income: ACS 2020–2024.
-                    County figures are not equivalent to metro-area audiences.
-                  </p>
-                </section>
-              )}
-              {view === "decision" && (
-                <>
+
+              {view === "simulator" ? (
+                <div className="simulator-workspace">
+                  <ScenarioComparison
+                    scenario={scenario}
+                    baseline={baseline}
+                    onPin={() => {
+                      setBaseline({ ...scenario });
+                      setNotice("Current assumptions pinned for comparison.");
+                    }}
+                    onReset={() => setBaseline({ ...DEFAULT_SCENARIO })}
+                  />
                   <section id="scenario-lab" className="scenario-section">
                     <div className="section-heading">
                       <div>
@@ -1109,7 +701,10 @@ export default function DecisionCenter() {
                             </strong>
                           </div>
                         </div>
-                        <ReversalChart scenario={scenario} />
+                        <ReversalChart
+                          scenario={scenario}
+                          baseline={baseline}
+                        />
                         <div
                           className={`reversal-callout ${result.status === "positive" ? "positive" : "negative"}`}
                         >
@@ -1296,8 +891,298 @@ export default function DecisionCenter() {
                       </ol>
                     </section>
                   )}
+                </div>
+              ) : (
+                <>
+                  <section
+                    className="mobile-brief"
+                    aria-label="Executive decision summary"
+                  >
+                    <span className="eyebrow">
+                      COMMERCIAL DECISION / CONDITIONAL SCENARIO
+                    </span>
+                    <h2>
+                      {result.status === "positive"
+                        ? `Prepare a ${market.short_name} test.`
+                        : result.status === "inactive"
+                          ? "Keep the no-campaign alternative."
+                          : "Revise before launch."}
+                    </h2>
+                    <div>
+                      <strong>
+                        {money(result.netContribution)}
+                        <small>Net contribution · assumed inputs</small>
+                      </strong>
+                      <p>
+                        {threshold === null ? (
+                          "No finite reversal threshold."
+                        ) : threshold > 1 ? (
+                          "No feasible incremental share clears break-even."
+                        ) : (
+                          <>
+                            Below <b>{percent(threshold)}</b> incrementality,
+                            contribution is negative.
+                          </>
+                        )}
+                      </p>
+                    </div>
+                    <button onClick={() => selectView("simulator")}>
+                      Open simulator <ArrowRight size={14} />
+                    </button>
+                  </section>
+                  <div className="intelligence-workspace">
+                    <RegionalMap selected={market} onSelect={setMarket} />
+                    <aside
+                      className="decision-dock"
+                      aria-label="Executive decision brief"
+                    >
+                      <section
+                        className="decision-hero"
+                        aria-labelledby="recommendation-title"
+                      >
+                        <div className="hero-main">
+                          <div className="hero-topline">
+                            <span className="hero-kicker">
+                              <Target size={14} />
+                              RECOMMENDATION
+                            </span>
+                            <span className="hero-status">
+                              {result.status === "positive"
+                                ? "CONDITIONAL TEST"
+                                : result.status === "inactive"
+                                  ? "NO MEDIA SPEND"
+                                  : "REVISE BEFORE LAUNCH"}
+                            </span>
+                          </div>
+                          <h2 id="recommendation-title">
+                            {result.status === "positive" ? (
+                              <>Prepare a {market.short_name} test.</>
+                            ) : result.status === "inactive" ? (
+                              <>
+                                Keep the no-campaign
+                                <br />
+                                alternative on the table.
+                              </>
+                            ) : (
+                              <>
+                                The current economics
+                                <br />
+                                don’t clear the bar.
+                              </>
+                            )}
+                          </h2>
+                          <p>
+                            Evaluate a bounded{" "}
+                            <strong>{market.short_name}</strong> ticket campaign
+                            for{" "}
+                            <strong>
+                              {game.franchise} vs. {game.opponent}
+                            </strong>
+                            .{" "}
+                            {result.status === "positive"
+                              ? "The scenario clears break-even; validate the assumptions before committing."
+                              : "Revise the assumptions or retain the no-campaign alternative."}
+                          </p>
+                          <div className="hero-footer">
+                            <span>
+                              <span className="team-dot" />
+                              {gameDate(game.starts_at)} ·{" "}
+                              {gameTime(game.starts_at)}
+                            </span>
+                            <span>{game.venue}</span>
+                          </div>
+                        </div>
+                        <div className="hero-economics">
+                          <span className="hero-metric-label">
+                            CONDITIONAL NET CONTRIBUTION
+                          </span>
+                          <strong className="hero-value">
+                            {money(result.netContribution)}
+                          </strong>
+                          <span className="hero-metric-note">
+                            after {money(result.totalCosts)} in campaign costs
+                          </span>
+                          <div className="hero-rule" />
+                          <div className="reversal-preview">
+                            <span>WHAT CHANGES THE DECISION?</span>
+                            <p>
+                              {threshold === null ? (
+                                "No finite break-even threshold at these inputs."
+                              ) : threshold > 1 ? (
+                                <>
+                                  Even <strong>100%</strong> incrementality
+                                  cannot break even.
+                                </>
+                              ) : (
+                                <>
+                                  Below <strong>{percent(threshold)}</strong>{" "}
+                                  incrementality, this campaign loses money.
+                                </>
+                              )}
+                            </p>
+                          </div>
+                          <button onClick={() => selectView("simulator")}>
+                            Open decision simulator <ArrowRight size={16} />
+                          </button>
+                        </div>
+                      </section>
+                      <VenueContext game={game} />
+                    </aside>
+                  </div>
+                  <div
+                    className="decision-kpis"
+                    aria-label="Campaign decision metrics"
+                  >
+                    {[
+                      [
+                        "Incremental tickets",
+                        result.incrementalTickets.toFixed(1),
+                        "Modeled average · not tickets sold",
+                      ],
+                      [
+                        "Break-even incremental orders",
+                        result.breakEvenOrders === null
+                          ? "—"
+                          : result.breakEvenOrders.toFixed(1),
+                        "Total campaign cost ÷ contribution per order",
+                      ],
+                      [
+                        "Maximum acquisition cost",
+                        result.maxCostPerOrder === null
+                          ? "—"
+                          : money(result.maxCostPerOrder, 2),
+                        "Per attributed order at break-even",
+                      ],
+                      [
+                        "Incrementality headroom",
+                        result.marginOfSafety === null
+                          ? "—"
+                          : signed(result.marginOfSafety * 100, " pp"),
+                        "Assumed share minus reversal threshold",
+                      ],
+                    ].map(([label, value, note]) => (
+                      <article key={label}>
+                        <span>
+                          {label}
+                          <Tag kind="Derived" />
+                        </span>
+                        <strong>{value}</strong>
+                        <small>{note}</small>
+                      </article>
+                    ))}
+                  </div>
+
+                  <div className="executive-evidence">
+                    <ShieldCheck size={16} />
+                    <p>
+                      <strong>Evidence boundary.</strong> Census facts describe
+                      the market. Campaign economics are assumptions. Selecting
+                      a different county does not imply different conversion or
+                      return.
+                    </p>
+                    <button onClick={() => selectView("evidence")}>
+                      Inspect evidence <ArrowUpRight size={14} />
+                    </button>
+                  </div>
+                  {view === "markets" && (
+                    <section className="panel comparison-table">
+                      <div className="panel-heading">
+                        <div>
+                          <span className="eyebrow">COMPARE THE CONTEXT</span>
+                          <h2>Six markets. No invented opportunity score.</h2>
+                        </div>
+                        <label className="sort-control">
+                          Sort by{" "}
+                          <select
+                            value={tableSort}
+                            onChange={(e) =>
+                              setTableSort(e.target.value as typeof tableSort)
+                            }
+                          >
+                            <option value="population_change_pct">
+                              Population change
+                            </option>
+                            <option value="population">Population</option>
+                            <option value="median_income">Median income</option>
+                          </select>
+                        </label>
+                      </div>
+                      <div className="table-scroll">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Market</th>
+                              <th>Population</th>
+                              <th>Change</th>
+                              <th>Households</th>
+                              <th>Median income</th>
+                              <th>Source</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {[...intelligence.markets]
+                              .sort((a, b) => b[tableSort] - a[tableSort])
+                              .map((m) => (
+                                <tr
+                                  key={m.market_id}
+                                  className={
+                                    m.market_id === market.market_id
+                                      ? "selected-row"
+                                      : ""
+                                  }
+                                >
+                                  <td>
+                                    <button onClick={() => setMarket(m)}>
+                                      {m.name}
+                                      <span>
+                                        {m.state} · {m.market_id}
+                                      </span>
+                                    </button>
+                                  </td>
+                                  <td>{integer(m.population)}</td>
+                                  <td>
+                                    {signed(m.population_change_pct, "%")}
+                                  </td>
+                                  <td>{integer(m.households)}</td>
+                                  <td>{money(m.median_income)}</td>
+                                  <td>
+                                    <a
+                                      href={m.source_url}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      aria-label={`Census source for ${m.name}`}
+                                    >
+                                      <ExternalLink size={14} />
+                                    </a>
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="muted table-footnote">
+                        Population: July 2025. Households and income: ACS
+                        2020–2024. County figures are not equivalent to
+                        metro-area audiences.
+                      </p>
+                    </section>
+                  )}
                 </>
               )}
+              <details className="game-context-disclosure">
+                <summary>
+                  <Activity size={15} />
+                  <span>Game context & official schedules</span>
+                  <span className="muted">
+                    Supporting context · public feeds
+                  </span>
+                  <ChevronDown size={15} />
+                </summary>
+                <LiveContext
+                  onSelect={selectGame}
+                  onRefresh={receiveSchedule}
+                />
+              </details>
             </>
           )}
           <footer className="footer">
@@ -1341,6 +1226,18 @@ export default function DecisionCenter() {
             {a.label}: {scenario[a.key]} {a.unit}. Assumed. {a.rationale}
           </p>
         ))}
+        <h3>Pinned comparison assumptions</h3>
+        {ASSUMPTIONS.map((a) => (
+          <p key={`comparison-${a.key}`}>
+            {a.label}: {baseline[a.key]} {a.unit}. Assumed comparison.
+          </p>
+        ))}
+        <p>
+          Pinned comparison contribution:{" "}
+          {money(evaluate(baseline).netContribution)}. Current minus comparison:{" "}
+          {money(result.netContribution - evaluate(baseline).netContribution)}.
+          Both use model {MODEL_VERSION}.
+        </p>
         <p>
           Incrementality reversal:{" "}
           {threshold === null ? "unavailable" : percent(threshold, 2)}.

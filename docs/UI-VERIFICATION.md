@@ -1,4 +1,18 @@
-# UI verification — November 10, 2026
+# UI verification
+
+## v0.3.0 — November 10, 2026
+
+- At 390 CSS pixels, the document had no horizontal overflow and the mobile layout supplied a compact decision summary before the map.
+- The overview gives the regional map and a neighboring decision brief the primary space. Public score feeds are in a supporting disclosure.
+- Population change and household income layers expose the source values for all six counties. Selecting Baton Rouge updated the market facts, Census source and recommendation together; scenario economics did not silently change.
+- Zoom changed the SVG geographic viewport from `255 235 620 365` to `317 271.5 496 292`. Map reset restores the initial extent.
+- At 40% incrementality, the simulator showed −$1,500 contribution and a −$3,000 change from the reference comparison. Pinning that case and restoring 65% preserved the pinned −$1,500 and displayed a +$3,000 current-case difference.
+- County SVG titles were made single text nodes after development testing exposed a server/client hydration mismatch. A fresh reload rendered without that overlay.
+- Source and license links accompany the authentic venue photographs. Input geometry and image files retain checksums.
+
+Validation includes three Python tests (snapshot integrity and TopoJSON ring/arc handling), 14 model/feed/export tests, TypeScript, ESLint, formatting, and production build. Native Power BI Desktop verification remains pending.
+
+## v0.2.0 — November 10, 2026
 
 The franchise redesign was checked in the local in-app browser before publication.
 

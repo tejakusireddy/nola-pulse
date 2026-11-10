@@ -8,11 +8,12 @@ NOLA PULSE connects Gulf Coast market context with upcoming home games and a tra
 
 - Full Pelicans and Saints editions: hover or focus to preview; select to keep the franchise, typography, and game context.
 - Searchable library of 34 defined commercial measures, separating observed facts, calculations, assumptions, and missing connections.
-- Live public game context for both franchises, with provider attribution, last-checked times, and stale/unavailable states.
+- Supporting public game context for both franchises, with provider attribution, last-checked times, and stale/unavailable states.
 - Upcoming New Orleans home schedules refreshed from the official team websites.
-- Six Census-backed market profiles on an interactive regional map and sortable comparison table.
-- Editable campaign assumptions, calculated break-even thresholds, sensitivity ranking, and combined downside stress.
-- A JSON decision brief and a printable PDF view preserving assumptions and source references.
+- A large Census-backed county map with population and income layers, selectable markets, pan, zoom, and a sortable comparison table.
+- A dedicated simulator with editable assumptions, pinned scenario comparison, calculated break-even thresholds, sensitivity ranking, and combined downside stress.
+- Authentic venue photographs with source and license credits, supporting each franchise’s commercial context.
+- A JSON decision brief and a printable PDF view preserving current and pinned assumptions, exact deltas, and source references.
 - Reproducible Python/SQL data preparation and a native Power BI project source with matching design tokens.
 
 The campaign outputs are conditional scenarios. Demographics are observed facts; acquisition cost, incrementality, and contribution margins are explicit assumptions. A market profile does not establish fan penetration or marketing performance.
@@ -71,3 +72,7 @@ These are model outputs, not observed team revenue or a prediction of campaign l
 No ticket-sales records, customer information, historical resale feed, causal elasticity estimate, or validated demand forecast is included. The interface makes these evidence boundaries explicit.
 
 Independent portfolio project. Not affiliated with or endorsed by the New Orleans Saints, New Orleans Pelicans, NFL, or NBA. Team names and marks belong to their respective owners.
+
+## Regional geometry
+
+The map uses geographic county boundaries, not estimated fan catchments. To reproduce the geometry, download the exact us-atlas 3.0.1 `counties-10m.json` URL recorded in `web/data/geography.json`, verify its recorded SHA-256, and run `python3 scripts/build_geography.py /path/to/counties-10m.json`. Layer shading scales the selected observed measure across the six candidate counties. Venue source and license details are recorded in `web/data/venue-assets.json`.

@@ -10,13 +10,15 @@ Open Evidence & methods. Census facts, official event metadata, derived comparis
 
 ## 1:00 — Reverse the recommendation
 
-Return to the decision center and lower incrementality from 65% to 40%. Net contribution changes from $1,500 to −$1,500. The recommendation changes to revise before launch. The calculated break-even share remains 52.5%, because all other inputs are unchanged.
+Open Simulator and lower incrementality from 65% to 40%. Net contribution changes from $1,500 to −$1,500. The recommendation changes to revise before launch. The calculated break-even share remains 52.5%, because all other inputs are unchanged.
+
+Pin the downside assumptions, then restore incrementality to 65%. The current case improves by $3,000 while the pinned comparison stays at −$1,500. The exported brief retains both input sets and their exact calculated differences.
 
 Point to the sensitivity ranking. Under the reference scenario's declared exploratory bounds, incrementality produces the largest adverse swing. Under changed assumptions, the ranking can change. This identifies what the test needs to learn, not a probability of success.
 
 ## 1:40 — Compare regional context
 
-Choose a different market on the map or in the comparison table. Observe the demographic differences and their source links. The model does not secretly lower acquisition cost in a higher-income market. A market-specific response claim needs campaign evidence.
+Return to Overview. Switch between population change, household income, and market footprint. Zoom the map or drag its background; choose a county or labeled city, or use the candidate-market buttons. The shading describes the selected observed Census measure. Choose a different market on the map or in the comparison table. Observe the demographic differences and their source links. The model does not secretly lower acquisition cost in a higher-income market. A market-specific response claim needs campaign evidence.
 
 ## 2:05 — Connect both franchises
 
