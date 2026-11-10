@@ -1,0 +1,38 @@
+{
+  "name": "NOLA PULSE \u00b7 Saints",
+  "dataColors": [
+    "#70d9c0",
+    "#ffb18d",
+    "#d3bc8d",
+    "#b9b5ac",
+    "#D3BC8D"
+  ],
+  "background": "#080808",
+  "foreground": "#f7f5f0",
+  "tableAccent": "#d3bc8d",
+  "good": "#70d9c0",
+  "bad": "#ffb18d",
+  "neutral": "#b9b5ac",
+  "textClasses": {
+    "title": {
+      "fontFace": "Saira",
+      "fontSize": 20,
+      "color": "#f7f5f0"
+    },
+    "header": {
+      "fontFace": "Saira",
+      "fontSize": 14,
+      "color": "#f7f5f0"
+    },
+    "label": {
+      "fontFace": "Saira",
+      "fontSize": 12,
+      "color": "#b9b5ac"
+    },
+    "callout": {
+      "fontFace": "Saira",
+      "fontSize": 34,
+      "color": "#d3bc8d"
+    }
+  }
+}

@@ -1,16 +1,38 @@
 {
-  "name": "NOLA PULSE",
-  "dataColors": ["#0A2340", "#B9975B", "#16766B", "#A74E2A", "#D3BC8D", "#5C6D7E"],
-  "background": "#F6F7F9",
-  "foreground": "#172A40",
-  "tableAccent": "#B9975B",
-  "good": "#16766B",
-  "bad": "#A74E2A",
-  "neutral": "#5C6D7E",
+  "name": "NOLA PULSE \u00b7 Pelicans",
+  "dataColors": [
+    "#70d9c0",
+    "#ffb18d",
+    "#b9975b",
+    "#acb9ca",
+    "#CE0E2D"
+  ],
+  "background": "#07172a",
+  "foreground": "#f5f7fa",
+  "tableAccent": "#b9975b",
+  "good": "#70d9c0",
+  "bad": "#ffb18d",
+  "neutral": "#acb9ca",
   "textClasses": {
-    "title": {"fontFace": "Montserrat", "fontSize": 16, "color": "#0A2340"},
-    "header": {"fontFace": "Montserrat", "fontSize": 12, "color": "#172A40"},
-    "label": {"fontFace": "Roboto", "fontSize": 10, "color": "#5C6D7E"},
-    "callout": {"fontFace": "Roboto", "fontSize": 28, "color": "#0A2340"}
+    "title": {
+      "fontFace": "Montserrat",
+      "fontSize": 20,
+      "color": "#f5f7fa"
+    },
+    "header": {
+      "fontFace": "Montserrat",
+      "fontSize": 14,
+      "color": "#f5f7fa"
+    },
+    "label": {
+      "fontFace": "Roboto",
+      "fontSize": 12,
+      "color": "#acb9ca"
+    },
+    "callout": {
+      "fontFace": "Montserrat",
+      "fontSize": 34,
+      "color": "#b9975b"
+    }
   }
 }

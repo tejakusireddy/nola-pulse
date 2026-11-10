@@ -265,7 +265,13 @@ function ReversalChart({ scenario }: { scenario: Scenario }) {
   );
 }
 
-function Sources({ market }: { market: Market }) {
+function Sources({
+  market,
+  franchise,
+}: {
+  market: Market;
+  franchise: Franchise;
+}) {
   return (
     <div className="evidence-content">
       <div className="section-heading">
@@ -344,8 +350,12 @@ function Sources({ market }: { market: Market }) {
           matching report theme are supplied in the repository. Native report
           assembly and Desktop rendering have not been validated.
         </p>
-        <a href="/downloads/powerbi-theme.json" download className="text-link">
-          Download report theme <Download size={14} />
+        <a
+          href={`/downloads/powerbi-theme-${franchise.toLowerCase()}.json`}
+          download
+          className="text-link"
+        >
+          Download {franchise} report theme <Download size={14} />
         </a>
       </article>
     </div>
@@ -608,7 +618,7 @@ export default function DecisionCenter() {
             <LiveContext onSelect={selectGame} onRefresh={receiveSchedule} />
           )}
           {view === "evidence" ? (
-            <Sources market={market} />
+            <Sources market={market} franchise={activeFranchise} />
           ) : view === "metrics" ? (
             <MetricLibrary
               market={market}

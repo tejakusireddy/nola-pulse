@@ -31,3 +31,7 @@ The custom theme is registered in the report and separately available as `theme.
 DAX is a separate execution engine. Its formulas mirror the shared economics; the Desktop checks above are necessary to confirm execution parity. The model relates `Scenarios[scenario_id]` (one) to `Curves[scenario_id]` (many). Markets and Games are independent contextual tables; no unsupported revenue relationship is inferred.
 
 [Microsoft PBIP documentation](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-overview) · [Semantic model files](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-dataset) · [Report definitions](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-report)
+
+## Franchise themes
+
+`theme.json` and `theme-pelicans.json` match the navy Pelicans edition; `theme-saints.json` matches the black and gold Saints edition. Install the licensed fonts from `web/public/fonts` on the Desktop computer, then use View → Themes → Browse for themes to select an edition. Saira is used for Saints; Montserrat and Roboto for Pelicans. Typography and chart semantics match the site; Power BI has no hover-based franchise switching. Desktop rendering remains unverified.
