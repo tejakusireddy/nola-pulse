@@ -63,7 +63,7 @@ export function createBrief(
       franchiseEvidence[game.franchise as keyof typeof franchiseEvidence] ??
       null,
     scenario_disclosure:
-      "Both franchises begin with identical illustrative assumptions. These inputs are not estimated from attendance, demographics, or actual team sales. Scenario edits and pinned comparisons are independent for each franchise.",
+      "User-entered planning inputs are not measured team performance and are not estimated from attendance or demographics. Scenario edits and pinned comparisons are independent for each franchise.",
     inputs: ASSUMPTIONS.map((a) => ({
       key: a.key,
       value: scenario[a.key],

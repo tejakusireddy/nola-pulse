@@ -33,3 +33,7 @@ Scenario outputs are not observed team performance. Eleven commercial measure gr
 - Verified Pelicans attendance directly in NBA Game Info and Saints paid attendance on official gamebook page 2. Dates, definitions, source links and single-game coverage remain visible.
 - Changed Pelicans incrementality to 40%: net contribution became −$1,500. Pinned those assumptions. Switched to Saints: incrementality stayed at 65%, current and pinned contribution remained $1,500. Switched back to confirm Pelicans retained its own scenario and comparison.
 - Reference result is calculated from the shared demonstration defaults and explained as illustrative. Attendance does not feed acquisition cost, contribution margin or incrementality.
+
+## Remove default campaign results · November 10, 2026
+
+The overview now contains franchise attendance and the selected team's home calendar; campaign results and the explanatory banner have been removed. Simulator starts with six blank inputs. Entered an $8,000 budget, $40 acquisition cost, 0.6 incrementality, 2 tickets/order, $45 contribution/ticket and $400 additional costs for Pelicans: calculation produced $2,400 and 46.7% reversal. Switched to Saints and verified its setup remained blank with export disabled. The metric library masks campaign values until user inputs are supplied. Overview exports contain public evidence rather than unrelated scenario defaults.

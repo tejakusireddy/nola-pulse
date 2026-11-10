@@ -6,7 +6,9 @@ import FranchiseSwitch, { useSelectedFranchise } from "./franchise-switch";
 import RegionalMap from "./regional-map";
 import VenueContext from "./venue-context";
 import ScenarioComparison from "./scenario-comparison";
+import ScenarioSetup from "./scenario-setup";
 import PublicTeamEvidence from "./public-team-evidence";
+import franchiseEvidence from "../data/franchise-evidence.json";
 import type { Franchise } from "./franchise-switch";
 import MetricLibrary from "./metric-library";
 import saintsSchedule from "../data/saints-schedule.json";
@@ -53,9 +55,7 @@ import {
 } from "../lib/format";
 
 type View = "decision" | "markets" | "simulator" | "metrics" | "evidence";
-const INITIAL_GAME =
-  intelligence.games.find((g) => g.opponent === "Nuggets") ||
-  intelligence.games[0];
+const INITIAL_GAME = intelligence.games[0];
 const chartLabel = (v: number) =>
   `${v < 0 ? "−" : ""}$${Math.abs(v / 1000).toFixed(0)}k`;
 
@@ -230,7 +230,7 @@ function Sources({
         <p>
           There is no validated geographic conversion model. Selecting a market
           does not silently change its acquisition cost or expected return. The
-          same explicit scenario applies until you edit it.
+          simulator requires campaign inputs before calculating a result.
         </p>
       </article>
       <article className="panel">
@@ -311,6 +311,10 @@ export default function DecisionCenter() {
     Pelicans: { ...DEFAULT_SCENARIO },
     Saints: { ...DEFAULT_SCENARIO },
   });
+  const [readyScenarios, setReadyScenarios] = useState<
+    Record<Franchise, boolean>
+  >({ Pelicans: false, Saints: false });
+  const scenarioReady = readyScenarios[activeFranchise];
   const scenario = scenarios[activeFranchise];
   const baseline = baselines[activeFranchise];
   const setScenario = (
@@ -334,6 +338,11 @@ export default function DecisionCenter() {
     "population" | "median_income" | "population_change_pct"
   >("population_change_pct");
   const exportRef = useRef<HTMLDivElement>(null);
+  const observation = franchiseEvidence[activeFranchise];
+  const scheduleUrl =
+    activeFranchise === "Pelicans"
+      ? "https://www.nba.com/pelicans/schedule"
+      : "https://www.neworleanssaints.com/schedule/";
   const result = evaluate(scenario);
   const risks = sensitivity(scenario);
   const stress = combinedDownside(scenario);
@@ -389,14 +398,30 @@ export default function DecisionCenter() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const exportBrief = () => {
-    const brief = createBrief(market, game, scenario, baseline);
+    const brief =
+      view === "simulator"
+        ? createBrief(market, game, scenario, baseline)
+        : {
+            title: `${activeFranchise} market brief`,
+            exported_at: new Date().toISOString(),
+            public_team_observation: observation,
+            selected_game: game,
+            published_home_fixtures: franchiseGames,
+            market,
+            scope:
+              "Published game and Census evidence; no campaign performance estimates.",
+          };
     download(
       `nola-pulse-${market.market_id}-${game.game_id}.json`,
       JSON.stringify(brief, null, 2),
       "application/json",
     );
     setExportOpen(false);
-    setNotice("Brief exported with assumptions, evidence, and reversal tests.");
+    setNotice(
+      view === "simulator"
+        ? "Scenario exported with inputs and reversal tests."
+        : "Franchise evidence exported with source references.",
+    );
   };
   const exportCsv = () => {
     const columns = [
@@ -503,7 +528,7 @@ export default function DecisionCenter() {
               </h1>
               <p>
                 {view === "decision"
-                  ? "Six candidate markets. One commercial decision. Every assumption visible."
+                  ? "Home fixtures, published attendance, and regional context."
                   : view === "markets"
                     ? "Compare regional context before making a commercial commitment."
                     : view === "simulator"
@@ -518,7 +543,9 @@ export default function DecisionCenter() {
                 className="button button-dark"
                 onClick={() => setExportOpen(!exportOpen)}
                 aria-expanded={exportOpen}
-                disabled={!!evidenceError}
+                disabled={
+                  !!evidenceError || (view === "simulator" && !scenarioReady)
+                }
               >
                 <Download size={16} />
                 Export brief
@@ -528,11 +555,10 @@ export default function DecisionCenter() {
                 <div className="export-menu">
                   <button onClick={exportBrief}>
                     <FileText size={16} />
-                    Decision brief · JSON
+                    {view === "simulator" ? "Scenario" : "Market brief"} · JSON
                   </button>
                   <button
                     onClick={() => {
-                      setView("decision");
                       setExportOpen(false);
                       setTimeout(() => window.print(), 100);
                     }}
@@ -553,9 +579,7 @@ export default function DecisionCenter() {
               {evidenceError}
             </div>
           )}
-          {(view === "decision" ||
-            view === "simulator" ||
-            view === "evidence") && (
+          {view === "evidence" && (
             <PublicTeamEvidence franchise={activeFranchise} />
           )}
           {view === "evidence" ? (
@@ -565,6 +589,7 @@ export default function DecisionCenter() {
               market={market}
               scenario={scenario}
               franchise={activeFranchise}
+              scenarioReady={scenarioReady}
             />
           ) : (
             <>
@@ -618,7 +643,20 @@ export default function DecisionCenter() {
                 </span>
               </div>
 
-              {view === "simulator" ? (
+              {view === "simulator" && !scenarioReady ? (
+                <ScenarioSetup
+                  key={activeFranchise}
+                  franchise={activeFranchise}
+                  onRun={(inputs) => {
+                    setScenario(inputs);
+                    setBaseline({ ...inputs });
+                    setReadyScenarios((previous) => ({
+                      ...previous,
+                      [activeFranchise]: true,
+                    }));
+                  }}
+                />
+              ) : view === "simulator" ? (
                 <div className="simulator-workspace">
                   <ScenarioComparison
                     scenario={scenario}
@@ -627,7 +665,7 @@ export default function DecisionCenter() {
                       setBaseline({ ...scenario });
                       setNotice("Current assumptions pinned for comparison.");
                     }}
-                    onReset={() => setBaseline({ ...DEFAULT_SCENARIO })}
+                    onReset={() => setBaseline({ ...scenario })}
                   />
                   <section id="scenario-lab" className="scenario-section">
                     <div className="section-heading">
@@ -644,8 +682,10 @@ export default function DecisionCenter() {
                       <button
                         className="button button-quiet"
                         onClick={() => {
-                          setScenario({ ...DEFAULT_SCENARIO });
-                          setNotice("Reference scenario restored.");
+                          setReadyScenarios((previous) => ({
+                            ...previous,
+                            [activeFranchise]: false,
+                          }));
                         }}
                       >
                         <RotateCcw size={14} />
@@ -924,39 +964,27 @@ export default function DecisionCenter() {
                 <>
                   <section
                     className="mobile-brief"
-                    aria-label="Executive decision summary"
+                    aria-label="Selected franchise game"
                   >
                     <span className="eyebrow">
-                      COMMERCIAL DECISION / CONDITIONAL SCENARIO
+                      {activeFranchise.toUpperCase()} / HOME CALENDAR
                     </span>
-                    <h2>
-                      {result.status === "positive"
-                        ? `Prepare a ${market.short_name} test.`
-                        : result.status === "inactive"
-                          ? "Keep the no-campaign alternative."
-                          : "Revise before launch."}
-                    </h2>
+                    <h2>vs. {game.opponent}</h2>
                     <div>
                       <strong>
-                        {money(result.netContribution)}
-                        <small>Net contribution · assumed inputs</small>
+                        {gameDate(game.starts_at)}
+                        <small>{gameTime(game.starts_at)}</small>
                       </strong>
-                      <p>
-                        {threshold === null ? (
-                          "No finite reversal threshold."
-                        ) : threshold > 1 ? (
-                          "No feasible incremental share clears break-even."
-                        ) : (
-                          <>
-                            Below <b>{percent(threshold)}</b> incrementality,
-                            contribution is negative.
-                          </>
-                        )}
-                      </p>
+                      <p>{game.venue}</p>
                     </div>
-                    <button onClick={() => selectView("simulator")}>
-                      Open simulator <ArrowRight size={14} />
-                    </button>
+                    <a
+                      className="text-link"
+                      href={scheduleUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Official schedule <ArrowUpRight size={14} />
+                    </a>
                   </section>
                   <div className="intelligence-workspace">
                     <RegionalMap selected={market} onSelect={setMarket} />
@@ -971,147 +999,110 @@ export default function DecisionCenter() {
                         <div className="hero-main">
                           <div className="hero-topline">
                             <span className="hero-kicker">
-                              <Target size={14} />
-                              RECOMMENDATION
+                              <Target size={14} /> HOME CALENDAR
                             </span>
                             <span className="hero-status">
-                              {result.status === "positive"
-                                ? "CONDITIONAL TEST"
-                                : result.status === "inactive"
-                                  ? "NO MEDIA SPEND"
-                                  : "REVISE BEFORE LAUNCH"}
+                              {activeFranchise.toUpperCase()}
                             </span>
                           </div>
-                          <h2 id="recommendation-title">
-                            {result.status === "positive" ? (
-                              <>Prepare a {market.short_name} test.</>
-                            ) : result.status === "inactive" ? (
-                              <>
-                                Keep the no-campaign
-                                <br />
-                                alternative on the table.
-                              </>
-                            ) : (
-                              <>
-                                The current economics
-                                <br />
-                                don’t clear the bar.
-                              </>
-                            )}
-                          </h2>
+                          <h2 id="recommendation-title">vs. {game.opponent}</h2>
                           <p>
-                            Evaluate a bounded{" "}
-                            <strong>{market.short_name}</strong> ticket campaign
-                            for{" "}
-                            <strong>
-                              {game.franchise} vs. {game.opponent}
-                            </strong>
-                            .{" "}
-                            {result.status === "positive"
-                              ? "The scenario clears break-even; validate the assumptions before committing."
-                              : "Revise the assumptions or retain the no-campaign alternative."}
+                            {gameDate(game.starts_at)} ·{" "}
+                            {gameTime(game.starts_at)}
                           </p>
                           <div className="hero-footer">
-                            <span>
-                              <span className="team-dot" />
-                              {gameDate(game.starts_at)} ·{" "}
-                              {gameTime(game.starts_at)}
-                            </span>
                             <span>{game.venue}</span>
+                            <a
+                              href={scheduleUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Official schedule <ArrowUpRight size={14} />
+                            </a>
                           </div>
                         </div>
                         <div className="hero-economics">
                           <span className="hero-metric-label">
-                            CONDITIONAL NET CONTRIBUTION
+                            {observation.label.toUpperCase()}
                           </span>
-                          <strong className="hero-value">
-                            {money(result.netContribution)}
+                          <strong className="hero-metric">
+                            {integer(observation.value)}
                           </strong>
                           <span className="hero-metric-note">
-                            after {money(result.totalCosts)} in campaign costs
+                            vs. {observation.opponent} · {observation.game_date}
                           </span>
                           <div className="hero-rule" />
                           <div className="reversal-preview">
-                            <span>WHAT CHANGES THE DECISION?</span>
-                            <p>
-                              {threshold === null ? (
-                                "No finite break-even threshold at these inputs."
-                              ) : threshold > 1 ? (
-                                <>
-                                  Even <strong>100%</strong> incrementality
-                                  cannot break even.
-                                </>
-                              ) : (
-                                <>
-                                  Below <strong>{percent(threshold)}</strong>{" "}
-                                  incrementality, this campaign loses money.
-                                </>
-                              )}
-                            </p>
+                            <span>REVIEWED HOME GAME</span>
+                            <p>{observation.venue}</p>
+                            <a
+                              className="text-link"
+                              href={observation.source_url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {observation.source_name}{" "}
+                              <ArrowUpRight size={14} />
+                            </a>
                           </div>
-                          <button onClick={() => selectView("simulator")}>
-                            Open decision simulator <ArrowRight size={16} />
-                          </button>
+                          <details className="attendance-definition">
+                            <summary>Definition & coverage</summary>
+                            <p>
+                              {observation.definition} {observation.coverage}
+                            </p>
+                          </details>
                         </div>
                       </section>
                       <VenueContext game={game} />
                     </aside>
                   </div>
-                  <div
-                    className="decision-kpis"
-                    aria-label="Campaign decision metrics"
+                  <section
+                    className="panel home-calendar"
+                    aria-label={`${activeFranchise} published home fixtures`}
                   >
-                    {[
-                      [
-                        "Incremental tickets",
-                        result.incrementalTickets.toFixed(1),
-                        "Modeled average · not tickets sold",
-                      ],
-                      [
-                        "Break-even incremental orders",
-                        result.breakEvenOrders === null
-                          ? "—"
-                          : result.breakEvenOrders.toFixed(1),
-                        "Total campaign cost ÷ contribution per order",
-                      ],
-                      [
-                        "Maximum acquisition cost",
-                        result.maxCostPerOrder === null
-                          ? "—"
-                          : money(result.maxCostPerOrder, 2),
-                        "Per attributed order at break-even",
-                      ],
-                      [
-                        "Incrementality headroom",
-                        result.marginOfSafety === null
-                          ? "—"
-                          : signed(result.marginOfSafety * 100, " pp"),
-                        "Assumed share minus reversal threshold",
-                      ],
-                    ].map(([label, value, note]) => (
-                      <article key={label}>
-                        <span>
-                          {label}
-                          <Tag kind="Derived" />
+                    <div className="panel-heading">
+                      <div>
+                        <span className="eyebrow">
+                          {activeFranchise.toUpperCase()} / PUBLISHED FIXTURES
                         </span>
-                        <strong>{value}</strong>
-                        <small>{note}</small>
-                      </article>
-                    ))}
-                  </div>
-
-                  <div className="executive-evidence">
-                    <ShieldCheck size={16} />
-                    <p>
-                      <strong>Evidence boundary.</strong> Census facts describe
-                      the market. Campaign economics are assumptions. Selecting
-                      a different county does not imply different conversion or
-                      return.
-                    </p>
-                    <button onClick={() => selectView("evidence")}>
-                      Inspect evidence <ArrowUpRight size={14} />
-                    </button>
-                  </div>
+                        <h2>Home calendar</h2>
+                      </div>
+                      <a
+                        className="text-link"
+                        href={scheduleUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Full schedule <ArrowUpRight size={14} />
+                      </a>
+                    </div>
+                    <div className="home-fixtures">
+                      {[...franchiseGames]
+                        .sort((a, b) => a.starts_at.localeCompare(b.starts_at))
+                        .slice(0, 4)
+                        .map((fixture) => (
+                          <button
+                            key={fixture.game_id}
+                            className={
+                              game.game_id === fixture.game_id
+                                ? "home-fixture selected"
+                                : "home-fixture"
+                            }
+                            onClick={() => setGame(fixture)}
+                          >
+                            <span>{gameDate(fixture.starts_at)}</span>
+                            <strong>vs. {fixture.opponent}</strong>
+                            <small>
+                              {gameTime(fixture.starts_at)} · {fixture.venue}
+                            </small>
+                          </button>
+                        ))}
+                    </div>
+                    <small className="muted">
+                      Published schedule · checked {gameDate(game.retrieved_at)}
+                      . Times shown in New Orleans time.
+                    </small>
+                  </section>
                   {view === "markets" && (
                     <section className="panel comparison-table">
                       <div className="panel-heading">
@@ -1231,56 +1222,59 @@ export default function DecisionCenter() {
           {notice}
         </div>
       )}
-      <section className="print-appendix">
-        <h2>Evidence and assumptions</h2>
-        <p>
-          Research snapshot: {intelligence.snapshot_date}. Model {MODEL_VERSION}
-          . {market.name}. {game.franchise} vs. {game.opponent},{" "}
-          {gameDate(game.starts_at)}.
-        </p>
-        <p>
-          Market source: {market.source_url}. Population vintage:{" "}
-          {market.population_vintage}. Income/households vintage:{" "}
-          {market.income_vintage}. Schedule: {game.source_url}, retrieved{" "}
-          {game.retrieved_at}.
-        </p>
-        <p>
-          Formula: N = (budget / cost per attributed order) × incremental share
-          × tickets per order × net contribution per ticket − budget − fixed
-          costs.
-        </p>
-        {ASSUMPTIONS.map((a) => (
-          <p key={a.key}>
-            {a.label}: {scenario[a.key]} {a.unit}. Assumed. {a.rationale}
+      {view === "simulator" && scenarioReady && (
+        <section className="print-appendix">
+          <h2>Evidence and assumptions</h2>
+          <p>
+            Research snapshot: {intelligence.snapshot_date}. Model{" "}
+            {MODEL_VERSION}. {market.name}. {game.franchise} vs. {game.opponent}
+            , {gameDate(game.starts_at)}.
           </p>
-        ))}
-        <h3>Pinned comparison assumptions</h3>
-        {ASSUMPTIONS.map((a) => (
-          <p key={`comparison-${a.key}`}>
-            {a.label}: {baseline[a.key]} {a.unit}. Assumed comparison.
+          <p>
+            Market source: {market.source_url}. Population vintage:{" "}
+            {market.population_vintage}. Income/households vintage:{" "}
+            {market.income_vintage}. Schedule: {game.source_url}, retrieved{" "}
+            {game.retrieved_at}.
           </p>
-        ))}
-        <p>
-          Pinned comparison contribution:{" "}
-          {money(evaluate(baseline).netContribution)}. Current minus comparison:{" "}
-          {money(result.netContribution - evaluate(baseline).netContribution)}.
-          Both use model {MODEL_VERSION}.
-        </p>
-        <p>
-          Incrementality reversal:{" "}
-          {threshold === null ? "unavailable" : percent(threshold, 2)}.
-          Conditional net contribution: {money(result.netContribution)}.
-        </p>
-        {intelligence.limitations.map((item) => (
-          <p key={item}>{item}</p>
-        ))}
-        <p>
-          Test plan: randomize treatment and holdout within the selected market;
-          validate primary inventory and margin, size the test using baseline
-          conversion, and measure incremental contribution. No revenue lift is
-          claimed before measurement.
-        </p>
-      </section>
+          <p>
+            Formula: N = (budget / cost per attributed order) × incremental
+            share × tickets per order × net contribution per ticket − budget −
+            fixed costs.
+          </p>
+          {ASSUMPTIONS.map((a) => (
+            <p key={a.key}>
+              {a.label}: {scenario[a.key]} {a.unit}. Assumed. {a.rationale}
+            </p>
+          ))}
+          <h3>Pinned comparison assumptions</h3>
+          {ASSUMPTIONS.map((a) => (
+            <p key={`comparison-${a.key}`}>
+              {a.label}: {baseline[a.key]} {a.unit}. Assumed comparison.
+            </p>
+          ))}
+          <p>
+            Pinned comparison contribution:{" "}
+            {money(evaluate(baseline).netContribution)}. Current minus
+            comparison:{" "}
+            {money(result.netContribution - evaluate(baseline).netContribution)}
+            . Both use model {MODEL_VERSION}.
+          </p>
+          <p>
+            Incrementality reversal:{" "}
+            {threshold === null ? "unavailable" : percent(threshold, 2)}.
+            Conditional net contribution: {money(result.netContribution)}.
+          </p>
+          {intelligence.limitations.map((item) => (
+            <p key={item}>{item}</p>
+          ))}
+          <p>
+            Test plan: randomize treatment and holdout within the selected
+            market; validate primary inventory and margin, size the test using
+            baseline conversion, and measure incremental contribution. No
+            revenue lift is claimed before measurement.
+          </p>
+        </section>
+      )}
     </div>
   );
 }

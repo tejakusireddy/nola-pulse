@@ -24,7 +24,7 @@ TicketData requires express permission for scraping or redistribution in its [te
 
 Aggregated exports can avoid customer names, emails and other identifiers. An organization or authorized provider must approve and supply them. No credentials or customer files should be committed to Git or uploaded to the demonstration site. An internal connector requires its own access controls and deployment review before introducing non-public records.
 
-Both franchises start from the same explicitly assumed campaign economics. The reference result is $1,500 because the mathematical inputs match. Switching franchises does not justify inventing a different acquisition cost, margin or causal lift. Editing one franchise's scenario and pinned baseline no longer edits the other franchise's state. Market demographics remain the same when the selected county is the same.
+The overview uses franchise-specific published attendance and home fixtures. The simulator opens with six empty campaign input fields for each franchise. Results appear only after the user supplies all inputs and submits the form. Scenario edits and pinned comparisons remain independent. Campaign values in the metric library remain unavailable until a scenario has been entered. The overview JSON export contains public observations, schedule and Census data, without campaign economics. Market demographics remain the same when the selected county is the same.
 
 ## Power BI verification
 

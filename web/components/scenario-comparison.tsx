@@ -50,7 +50,7 @@ export default function ScenarioComparison({
           </button>
           <button onClick={onReset}>
             <RotateCcw size={13} />
-            Reference comparison
+            Reset comparison
           </button>
         </div>
       </div>

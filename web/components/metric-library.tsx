@@ -22,10 +22,12 @@ export default function MetricLibrary({
   market,
   scenario,
   franchise,
+  scenarioReady = false,
 }: {
   market: Market;
   scenario: Scenario;
   franchise: string;
+  scenarioReady?: boolean;
 }) {
   const [filter, setFilter] = useState("All measures");
   const [query, setQuery] = useState("");
@@ -34,7 +36,7 @@ export default function MetricLibrary({
     "lib/scenario.ts · evaluate() · model 1.0.0. Derived from the six editable assumptions; not measured performance.";
   const observation =
     franchiseEvidence[franchise as keyof typeof franchiseEvidence];
-  const metrics: Metric[] = [
+  const catalog: Metric[] = [
     {
       name: observation.label,
       value: integer(observation.value),
@@ -256,6 +258,17 @@ export default function MetricLibrary({
       use: `Required to turn ${franchise} market investigation into measured commercial performance.`,
     })),
   ];
+  const metrics = catalog.map(
+    (metric): Metric =>
+      metric.category === "Campaign economics" && !scenarioReady
+        ? {
+            ...metric,
+            value: "Enter campaign inputs",
+            kind: "Required",
+            source: "Simulator · awaiting user inputs",
+          }
+        : metric,
+  );
   const shown = metrics.filter(
     (m) =>
       (filter === "All measures" || m.category === filter) &&
@@ -283,6 +296,7 @@ export default function MetricLibrary({
           {[
             "All measures",
             "Campaign economics",
+            "Team context",
             "Market context",
             "Data connections",
           ].map((f) => (
