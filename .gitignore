@@ -1,0 +1,53 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# JavaScript and build output
+node_modules/
+.next/
+.vercel/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Local datasets, databases, and generated outputs
+data/raw/
+data/interim/
+data/processed/
+*.duckdb
+*.duckdb.wal
+*.sqlite
+*.sqlite3
+*.db
+artifacts/
+exports/
+*.log
+
+# Power BI local state
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+**/.pbi/unappliedChanges.json
+*.pbix
+*.pbit
+
+# Editor and operating system files
+.DS_Store
+.idea/
+.vscode/
+*.swp
