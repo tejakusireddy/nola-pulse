@@ -2,7 +2,9 @@
 
 **Saints and Pelicans market intelligence.** Measured attendance performance, Gulf Coast market context, and campaign planning.
 
-The opening dashboard analyzes 109 reviewed home-game attendance records across three seasons per franchise. It compares equal numbers of home dates, separates partial seasons from completed seasons, and links every game observation to its source. Campaign economics live in a separate simulator that requires user inputs.
+The opening decision brief shows media budget, incremental ticket revenue, net contribution, contribution ROI, and a calculated decision-reversal threshold. Pelicans and Saints use separate editable planning examples. These are authored scenarios, not estimates of team financial performance. A revenue-to-contribution chart reconciles every modeled cost.
+
+Supporting attendance analysis covers 109 reviewed home-game records across three seasons per franchise. Markets and attendance are separate research views. Source records remain available on demand rather than repeated as an overview table.
 
 ## Working experience
 

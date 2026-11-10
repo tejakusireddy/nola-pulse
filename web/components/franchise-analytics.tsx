@@ -353,44 +353,6 @@ export default function FranchiseAnalytics({
       </div>
 
       <div className="performance-secondary-grid">
-        <section className="panel season-history">
-          <div className="panel-heading">
-            <div>
-              <span className="eyebrow">THREE-SEASON VIEW</span>
-              <h2>Season totals and averages</h2>
-            </div>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Season</th>
-                <th>Home dates</th>
-                <th>Total</th>
-                <th>Average</th>
-              </tr>
-            </thead>
-            <tbody>
-              {options.map((option) => (
-                <tr
-                  key={option.season}
-                  className={option.season === season ? "selected-season" : ""}
-                >
-                  <th scope="row">
-                    <button onClick={() => onSeasonChange(option.season)}>
-                      {option.season_label}
-                      {option.season === options[0].season && (
-                        <small>To date</small>
-                      )}
-                    </button>
-                  </th>
-                  <td>{option.home_games}</td>
-                  <td>{integer(option.total_attendance)}</td>
-                  <td>{integer(option.average_attendance)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
         <section className="panel attendance-day-mix">
           <span className="eyebrow">GAME-DAY MIX / {rollup.season_label}</span>
           <h2>Weekday and weekend crowds</h2>

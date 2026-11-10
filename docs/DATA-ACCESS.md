@@ -26,7 +26,9 @@ The performance overview additionally uses 109 reviewed ESPN game-level attendan
 
 Aggregated exports can avoid customer names, emails and other identifiers. An organization or authorized provider must approve and supply them. No credentials or customer files should be committed to Git or uploaded to the demonstration site. An internal connector requires its own access controls and deployment review before introducing non-public records.
 
-The overview uses franchise-specific published attendance and home fixtures. The simulator opens with six empty campaign input fields for each franchise. Results appear only after the user supplies all inputs and submits the form. Scenario edits and pinned comparisons remain independent. Campaign values in the metric library remain unavailable until a scenario has been entered. The overview JSON export contains public observations, schedule and Census data, without campaign economics. Market demographics remain the same when the selected county is the same.
+The financial decision brief starts from two explicitly illustrative planning examples. Each uses $25,000 in media spend for comparison; every other input remains independent. Pelicans inputs produce $41,250 in modeled incremental ticket revenue and $7,550 net contribution; Saints inputs produce $50,000 and $12,500. These are not estimates of actual team revenue, margins or campaign outcomes. `web/data/campaign-plans.json` documents the input origin and `web/lib/campaign-finance.ts` derives the results from the tested scenario engine. Revenue minus variable costs, media and other campaign costs reconciles exactly to net contribution. The calculated incrementality reversals are 46.58% and 34.38%; the threshold is not typed into the interface.
+
+Observed attendance remains in a separate view. Campaign and Census evidence stay distinct in exports. The decision brief contains no population tiles or repeated attendance table. Regional facts remain available in Markets.
 
 ## Power BI verification
 

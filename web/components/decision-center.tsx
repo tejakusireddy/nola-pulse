@@ -12,7 +12,9 @@ import {
   seasonOptions,
 } from "../lib/attendance";
 import ScenarioComparison from "./scenario-comparison";
-import ScenarioSetup from "./scenario-setup";
+import FinancialBrief from "./financial-brief";
+import { initialCampaign, campaignFinance } from "../lib/campaign-finance";
+import type { CampaignScenario } from "../lib/campaign-finance";
 import PublicTeamEvidence from "./public-team-evidence";
 import type { Franchise } from "./franchise-switch";
 import MetricLibrary from "./metric-library";
@@ -39,7 +41,6 @@ import {
 import intelligence from "../data/intelligence.json";
 import {
   ASSUMPTIONS,
-  DEFAULT_SCENARIO,
   MODEL_VERSION,
   combinedDownside,
   contributionCurve,
@@ -51,7 +52,13 @@ import { assertEvidence, createBrief, download } from "../lib/brief";
 import type { Game, Market } from "../lib/brief";
 import { gameDate, integer, money, percent, signed } from "../lib/format";
 
-type View = "decision" | "markets" | "simulator" | "metrics" | "evidence";
+type View =
+  | "decision"
+  | "attendance"
+  | "markets"
+  | "simulator"
+  | "metrics"
+  | "evidence";
 const INITIAL_GAME = intelligence.games[0];
 const chartLabel = (v: number) =>
   `${v < 0 ? "−" : ""}$${Math.abs(v / 1000).toFixed(0)}k`;
@@ -300,33 +307,52 @@ export default function DecisionCenter() {
   useEffect(() => {
     document.documentElement.dataset.franchise = activeFranchise.toLowerCase();
   }, [activeFranchise]);
-  const [scenarios, setScenarios] = useState<Record<Franchise, Scenario>>({
-    Pelicans: { ...DEFAULT_SCENARIO },
-    Saints: { ...DEFAULT_SCENARIO },
+  const [scenarios, setScenarios] = useState<
+    Record<Franchise, CampaignScenario>
+  >({
+    Pelicans: initialCampaign("Pelicans"),
+    Saints: initialCampaign("Saints"),
   });
-  const [baselines, setBaselines] = useState<Record<Franchise, Scenario>>({
-    Pelicans: { ...DEFAULT_SCENARIO },
-    Saints: { ...DEFAULT_SCENARIO },
+  const [baselines, setBaselines] = useState<
+    Record<Franchise, CampaignScenario>
+  >({
+    Pelicans: initialCampaign("Pelicans"),
+    Saints: initialCampaign("Saints"),
   });
-  const [readyScenarios, setReadyScenarios] = useState<
-    Record<Franchise, boolean>
-  >({ Pelicans: false, Saints: false });
-  const scenarioReady = readyScenarios[activeFranchise];
   const scenario = scenarios[activeFranchise];
   const baseline = baselines[activeFranchise];
   const setScenario = (
-    update: Scenario | ((previous: Scenario) => Scenario),
+    update:
+      | Scenario
+      | CampaignScenario
+      | ((previous: CampaignScenario) => Scenario),
   ) => {
-    setScenarios((previous) => ({
-      ...previous,
-      [activeFranchise]:
+    setScenarios((previous) => {
+      const next =
         typeof update === "function"
           ? update(previous[activeFranchise])
-          : update,
-    }));
+          : update;
+      return {
+        ...previous,
+        [activeFranchise]: {
+          ...previous[activeFranchise],
+          ...next,
+          ticketPrice:
+            "ticketPrice" in next
+              ? next.ticketPrice
+              : Math.max(
+                  previous[activeFranchise].ticketPrice,
+                  next.contributionPerTicket,
+                ),
+        },
+      };
+    });
   };
   const setBaseline = (next: Scenario) => {
-    setBaselines((previous) => ({ ...previous, [activeFranchise]: next }));
+    setBaselines((previous) => ({
+      ...previous,
+      [activeFranchise]: { ...scenario, ...next },
+    }));
   };
   const [exportOpen, setExportOpen] = useState(false);
   const [notice, setNotice] = useState("");
@@ -402,8 +428,19 @@ export default function DecisionCenter() {
   };
   const exportBrief = () => {
     const brief =
-      view === "simulator"
-        ? createBrief(market, game, scenario, baseline)
+      view === "simulator" || view === "decision"
+        ? {
+            ...createBrief(market, game, scenario, baseline),
+            financials: campaignFinance(scenario),
+            comparison_financials: campaignFinance(baseline),
+            financial_inputs: {
+              ticket_yield: scenario.ticketPrice,
+              variable_cost_per_ticket:
+                scenario.ticketPrice - scenario.contributionPerTicket,
+              kind: "Assumed",
+              source_id: "scenario",
+            },
+          }
         : {
             title: `${activeFranchise} market brief`,
             exported_at: new Date().toISOString(),
@@ -413,7 +450,7 @@ export default function DecisionCenter() {
             ),
             attendance_sources: attendance.sources,
             attendance_as_of: attendance.as_of,
-            selected_game: view === "decision" ? nextHomeGame : game,
+            selected_game: nextHomeGame,
             next_opponent_history: historicalOpponent(
               activeFranchise,
               nextHomeGame.opponent,
@@ -430,12 +467,38 @@ export default function DecisionCenter() {
     );
     setExportOpen(false);
     setNotice(
-      view === "simulator"
+      view === "simulator" || view === "decision"
         ? "Scenario exported with inputs and reversal tests."
         : "Franchise evidence exported with source references.",
     );
   };
   const exportCsv = () => {
+    if (view === "decision" || view === "simulator") {
+      const finance = campaignFinance(scenario);
+      const record = {
+        franchise: activeFranchise,
+        game: game.opponent,
+        kind: "Assumed",
+        ...scenario,
+        incremental_ticket_revenue: finance.incrementalTicketRevenue,
+        variable_costs: finance.variableCosts,
+        total_cash_costs: finance.totalCashCosts,
+        net_contribution: finance.netContribution,
+        contribution_roi: finance.contributionROI,
+        incrementality_reversal: finance.breakEvenShare,
+      };
+      const columns = Object.keys(record) as (keyof typeof record)[];
+      download(
+        `nola-pulse-${activeFranchise.toLowerCase()}-financial-case.csv`,
+        columns.join(",") +
+          "\n" +
+          columns.map((key) => JSON.stringify(record[key])).join(",") +
+          "\n",
+        "text/csv",
+      );
+      setExportOpen(false);
+      return;
+    }
     const columns = [
       "market_id",
       "name",
@@ -494,7 +557,8 @@ export default function DecisionCenter() {
           <nav aria-label="Primary navigation">
             {(
               [
-                ["decision", "Overview", Target],
+                ["decision", "Decision brief", Target],
+                ["attendance", "Attendance", Activity],
                 ["markets", "Markets", MapPin],
                 ["simulator", "Simulator", SlidersHorizontal],
                 ["metrics", "Metric library", BarChart3],
@@ -529,25 +593,29 @@ export default function DecisionCenter() {
               </div>
               <h1>
                 {view === "decision"
-                  ? "Market intelligence"
-                  : view === "markets"
-                    ? "Regional comparison"
-                    : view === "simulator"
-                      ? "Campaign simulator"
-                      : view === "metrics"
-                        ? "Metric library"
-                        : "Evidence & methods"}
+                  ? "Campaign decision"
+                  : view === "attendance"
+                    ? "Attendance performance"
+                    : view === "markets"
+                      ? "Regional comparison"
+                      : view === "simulator"
+                        ? "Campaign simulator"
+                        : view === "metrics"
+                          ? "Metric library"
+                          : "Evidence & methods"}
               </h1>
               <p>
                 {view === "decision"
-                  ? "Attendance performance, historical comparisons, and the New Orleans market."
-                  : view === "markets"
-                    ? "Compare regional context before making a commercial commitment."
-                    : view === "simulator"
-                      ? "Make the trade-offs explicit. Compare assumptions and find the point where the decision changes."
-                      : view === "metrics"
-                        ? "Commercial measures, their definitions, and the evidence needed to use them."
-                        : "Inspect the facts, assumptions, and limits behind the recommendation."}
+                  ? "Evaluate the spend, incremental revenue, and break-even case."
+                  : view === "attendance"
+                    ? "Reported home crowds and like-for-like season comparisons."
+                    : view === "markets"
+                      ? "Compare regional context before making a commercial commitment."
+                      : view === "simulator"
+                        ? "Make the trade-offs explicit. Compare assumptions and find the point where the decision changes."
+                        : view === "metrics"
+                          ? "Commercial measures, their definitions, and the evidence needed to use them."
+                          : "Inspect the facts, assumptions, and limits behind the recommendation."}
               </p>
             </div>
             <div className="export-control" ref={exportRef}>
@@ -555,9 +623,7 @@ export default function DecisionCenter() {
                 className="button button-dark"
                 onClick={() => setExportOpen(!exportOpen)}
                 aria-expanded={exportOpen}
-                disabled={
-                  !!evidenceError || (view === "simulator" && !scenarioReady)
-                }
+                disabled={!!evidenceError}
               >
                 <Download size={16} />
                 Export brief
@@ -567,7 +633,10 @@ export default function DecisionCenter() {
                 <div className="export-menu">
                   <button onClick={exportBrief}>
                     <FileText size={16} />
-                    {view === "simulator" ? "Scenario" : "Market brief"} · JSON
+                    {view === "simulator" || view === "decision"
+                      ? "Scenario brief"
+                      : "Market brief"}{" "}
+                    · JSON
                   </button>
                   <button
                     onClick={() => {
@@ -580,7 +649,9 @@ export default function DecisionCenter() {
                   </button>
                   <button onClick={exportCsv}>
                     <BarChart3 size={16} />
-                    Market data · CSV
+                    {view === "decision" || view === "simulator"
+                      ? "Financial case · CSV"
+                      : "Market data · CSV"}
                   </button>
                 </div>
               )}
@@ -601,10 +672,21 @@ export default function DecisionCenter() {
               market={market}
               scenario={scenario}
               franchise={activeFranchise}
-              scenarioReady={scenarioReady}
+              scenarioReady={true}
               attendanceSeason={attendanceSeason}
             />
           ) : view === "decision" ? (
+            <FinancialBrief
+              franchise={activeFranchise}
+              scenario={scenario}
+              onChange={setScenario}
+              game={game}
+              games={franchiseGames}
+              onGameChange={setGame}
+              onSimulator={() => selectView("simulator")}
+              onAttendance={() => selectView("attendance")}
+            />
+          ) : view === "attendance" ? (
             <FranchiseAnalytics
               franchise={activeFranchise}
               season={attendanceSeason}
@@ -670,20 +752,7 @@ export default function DecisionCenter() {
                 </span>
               </div>
 
-              {view === "simulator" && !scenarioReady ? (
-                <ScenarioSetup
-                  key={activeFranchise}
-                  franchise={activeFranchise}
-                  onRun={(inputs) => {
-                    setScenario(inputs);
-                    setBaseline({ ...inputs });
-                    setReadyScenarios((previous) => ({
-                      ...previous,
-                      [activeFranchise]: true,
-                    }));
-                  }}
-                />
-              ) : view === "simulator" ? (
+              {view === "simulator" ? (
                 <div className="simulator-workspace">
                   <ScenarioComparison
                     scenario={scenario}
@@ -709,10 +778,7 @@ export default function DecisionCenter() {
                       <button
                         className="button button-quiet"
                         onClick={() => {
-                          setReadyScenarios((previous) => ({
-                            ...previous,
-                            [activeFranchise]: false,
-                          }));
+                          setScenario(initialCampaign(activeFranchise));
                         }}
                       >
                         <RotateCcw size={14} />
@@ -746,8 +812,12 @@ export default function DecisionCenter() {
                               <input
                                 id={`input-${a.key}`}
                                 type="range"
-                                min={a.min}
-                                max={a.max}
+                                min={Math.min(a.min, scenario[a.key])}
+                                max={
+                                  a.key === "contributionPerTicket"
+                                    ? scenario.ticketPrice
+                                    : Math.max(a.max, scenario[a.key])
+                                }
                                 step={a.step}
                                 value={scenario[a.key]}
                                 onChange={(e) =>
@@ -1148,7 +1218,7 @@ export default function DecisionCenter() {
           {notice}
         </div>
       )}
-      {view === "simulator" && scenarioReady && (
+      {(view === "simulator" || view === "decision") && (
         <section className="print-appendix">
           <h2>Evidence and assumptions</h2>
           <p>
@@ -1161,6 +1231,14 @@ export default function DecisionCenter() {
             {market.population_vintage}. Income/households vintage:{" "}
             {market.income_vintage}. Schedule: {game.source_url}, retrieved{" "}
             {game.retrieved_at}.
+          </p>
+          <p>
+            Modeled ticket yield: {money(scenario.ticketPrice)}. Variable cost
+            per ticket:{" "}
+            {money(scenario.ticketPrice - scenario.contributionPerTicket)}.
+            Incremental ticket revenue:{" "}
+            {money(campaignFinance(scenario).incrementalTicketRevenue)}. These
+            pricing and cost inputs are illustrative planning assumptions.
           </p>
           <p>
             Formula: N = (budget / cost per attributed order) × incremental

@@ -14,7 +14,7 @@
     "db:generate": "drizzle-kit generate",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "typecheck": "tsc --noEmit",
-    "format:check": "prettier --check app components lib/scenario.ts lib/brief.ts lib/format.ts lib/live-normalize.ts lib/attendance.ts tests"
+    "format:check": "prettier --check app components lib/scenario.ts lib/brief.ts lib/format.ts lib/live-normalize.ts lib/attendance.ts lib/campaign-finance.ts tests"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
