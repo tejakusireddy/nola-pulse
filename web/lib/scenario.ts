@@ -35,7 +35,7 @@ export const ASSUMPTIONS: Assumption[] = [
     label: "Campaign spend",
     unit: "USD",
     min: 0,
-    max: 20000,
+    max: 100000,
     step: 500,
     rationale: "A bounded test budget; not a recommended allocation.",
   },

@@ -1,0 +1,26 @@
+{
+  "origin": "Authored portfolio planning examples, not measured or estimated franchise financial results. Inputs are not calibrated from attendance or demographics.",
+  "kind": "Assumed",
+  "plans": {
+    "Pelicans": {
+      "name": "Group-ticket pilot",
+      "budget": 25000,
+      "costPerOrder": 40,
+      "incrementality": 0.6,
+      "ticketsPerOrder": 2,
+      "ticketPrice": 55,
+      "variableCostPerTicket": 10,
+      "fixedCosts": 1200
+    },
+    "Saints": {
+      "name": "Regional ticket pilot",
+      "budget": 25000,
+      "costPerOrder": 75,
+      "incrementality": 0.5,
+      "ticketsPerOrder": 2.4,
+      "ticketPrice": 125,
+      "variableCostPerTicket": 25,
+      "fixedCosts": 2500
+    }
+  }
+}
