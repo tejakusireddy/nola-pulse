@@ -1,0 +1,24 @@
+{
+  "Pelicans": {
+    "path": "/venues/pelicans.jpg",
+    "author": "ajay_suresh",
+    "captured_at": "2026-02-04",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Smoothie_King_Center_(55151708016).jpg",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "alt": "Exterior of Smoothie King Center in New Orleans, February 2026",
+    "sha256": "7524558dee15a9f877d99ac8ebf2583244da42343bb49fb00cf4994d00b19dd7",
+    "display_changes": "Cropped to fit the venue panel; dark CSS overlay for text readability. Web-sized copy provided by Commons."
+  },
+  "Saints": {
+    "path": "/venues/saints.jpg",
+    "author": "Glimmergloss",
+    "captured_at": "2025-09-10",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Caesars_Superdome_New_Orleans,_LA.jpg",
+    "license": "CC0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "alt": "Exterior of Caesars Superdome in New Orleans, September 2025",
+    "sha256": "fe0c720f9082b70021f96b3d7df65f40cb09b3169987f6b4a8a6e00a00c5788f",
+    "display_changes": "Cropped to fit the venue panel; dark CSS overlay for text readability. Web-sized copy provided by Commons."
+  }
+}
