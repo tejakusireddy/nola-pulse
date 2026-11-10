@@ -1,0 +1,90 @@
+{
+  "as_of": "2026-11-10",
+  "sources": [
+    {
+      "id": "pelicans-2025",
+      "provider": "ESPN public schedule feed",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/3/schedule?season=2025&seasontype=2",
+      "franchise": "Pelicans",
+      "requested_season": 2025,
+      "retrieved_at": "2026-11-10T14:56:37.918984+00:00",
+      "provider_updated_at": "2026-11-10T14:52:22Z",
+      "payload_sha256": "19f5e1307b7bc990e3a715bba6b2dd6bdb24c4a484656e1ebdfdddc33bec544c"
+    },
+    {
+      "id": "pelicans-2026",
+      "provider": "ESPN public schedule feed",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/3/schedule?season=2026&seasontype=2",
+      "franchise": "Pelicans",
+      "requested_season": 2026,
+      "retrieved_at": "2026-11-10T14:56:37.993398+00:00",
+      "provider_updated_at": "2026-11-10T14:54:58Z",
+      "payload_sha256": "f38eaf9f02534b5e6ff04a964b193d8a5147722499c831641f8b4671344aa4bd"
+    },
+    {
+      "id": "pelicans-2027",
+      "provider": "ESPN public schedule feed",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/3/schedule?season=2027&seasontype=2",
+      "franchise": "Pelicans",
+      "requested_season": 2027,
+      "retrieved_at": "2026-11-10T14:57:01.216343+00:00",
+      "provider_updated_at": "2026-11-10T14:56:53Z",
+      "payload_sha256": "ce2e8ab38e4080ccbfef6971905a9ed183cafb92a98910a212d31f07e882ed4c"
+    },
+    {
+      "id": "saints-2024",
+      "provider": "ESPN public schedule feed",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/18/schedule?season=2024&seasontype=2",
+      "franchise": "Saints",
+      "requested_season": 2024,
+      "retrieved_at": "2026-11-10T14:56:37.815973+00:00",
+      "provider_updated_at": "2026-11-10T14:53:54Z",
+      "payload_sha256": "bf87a18092965c1cd4e3ce971741de4d39111718bb19441967eacbbdf721b588"
+    },
+    {
+      "id": "saints-2025",
+      "provider": "ESPN public schedule feed",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/18/schedule?season=2025&seasontype=2",
+      "franchise": "Saints",
+      "requested_season": 2025,
+      "retrieved_at": "2026-11-10T14:56:37.789397+00:00",
+      "provider_updated_at": "2026-11-10T14:55:52Z",
+      "payload_sha256": "2ae9d3d2146cba1a1105cf87f182f9f3ac5f121aaf6eca732abf3a7dd8d6e657"
+    },
+    {
+      "id": "saints-2026",
+      "provider": "ESPN public schedule feed",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/18/schedule?season=2026&seasontype=2",
+      "franchise": "Saints",
+      "requested_season": 2026,
+      "retrieved_at": "2026-11-10T14:57:01.160167+00:00",
+      "provider_updated_at": "2026-11-10T14:56:23Z",
+      "payload_sha256": "e9d99c17cab1fefff4c08d15b252fc79f3d74b4a05259268d797037472246f0d"
+    },
+    {
+      "id": "nba-20241023-chinop",
+      "provider": "NBA Game Info",
+      "url": "https://www.nba.com/game/0022400069",
+      "retrieved_at": "2026-11-10T15:01:01.345478+00:00",
+      "method": "ESPN's completed 2024-10-23 Chicago at New Orleans event returned attendance 0. NBA Game Info directly reports 18,581. Verified in the official game page on 2026-11-10; not imputed from a season total."
+    }
+  ],
+  "excluded": [
+    {
+      "event_id": "401705183",
+      "franchise": "Pelicans",
+      "season": 2025,
+      "date": "2025-01-23T01:00Z",
+      "venue": "Smoothie King Center",
+      "reason": "Not completed; postponed or cancelled record"
+    },
+    {
+      "event_id": "401873011",
+      "franchise": "Saints",
+      "season": 2026,
+      "date": "2026-10-25T13:30Z",
+      "venue": "Stade de France",
+      "reason": "Outside New Orleans or neutral site"
+    }
+  ]
+}
