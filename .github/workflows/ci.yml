@@ -28,6 +28,7 @@ jobs:
       - run: npm --prefix web run format:check
       - run: python3 scripts/build_data.py --web
       - run: node --experimental-strip-types web/scripts/export-analytics.mjs
+      - run: python3 scripts/build_attendance.py
       - run: python3 scripts/build_powerbi.py
-      - run: git diff --exit-code -- web/data/intelligence.json powerbi
+      - run: git diff --exit-code -- web/data/intelligence.json web/data/attendance.json powerbi
       - run: npm --prefix web run build

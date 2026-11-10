@@ -28,8 +28,14 @@ def build():
         ('Break-even Share', 'DIVIDE([Campaign Costs], [Attributed Orders] * SELECTEDVALUE(Scenarios[ticketsPerOrder]) * SELECTEDVALUE(Scenarios[contributionPerTicket]))', '0.0%'),
         ('Decision', 'IF(NOT HASONEVALUE(Scenarios[scenario_id]), "Select one scenario", IF(SELECTEDVALUE(Scenarios[budget]) = 0, "No active campaign", IF(ABS([Net Contribution]) < 0.000001, "Break-even", IF([Net Contribution] > 0, "Conditional test", "Revise before launch"))))', ''),
     ]
-    files = {'Markets': 'market_comparison.csv', 'Games': 'games.csv', 'Scenarios': 'scenarios.csv', 'Curves': 'curves.csv'}
-    text_columns = {'market_id', 'name', 'short_name', 'state', 'source_url', 'population_vintage', 'income_vintage', 'reviewed_on', 'game_id', 'franchise', 'opponent', 'starts_at', 'venue', 'retrieved_at', 'scenario_id', 'label', 'status'}
+    attendance_measures = [
+        ('Attendance Scope', 'IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), SELECTEDVALUE(Attendance[franchise]) & " / " & SELECTEDVALUE(Attendance[season_label]), "Select one franchise and season")', ''),
+        ('Reported Attendance', 'IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), SUM(Attendance[attendance]), BLANK())', '#,0'),
+        ('Average Home Attendance', 'IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), AVERAGE(Attendance[attendance]), BLANK())', '#,0'),
+        ('Completed Home Dates', 'IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), COUNTROWS(Attendance), BLANK())', '#,0'),
+    ]
+    files = {'Attendance': 'attendance_games.csv', 'Markets': 'market_comparison.csv', 'Games': 'games.csv', 'Scenarios': 'scenarios.csv', 'Curves': 'curves.csv'}
+    text_columns = {'market_id', 'name', 'short_name', 'state', 'source_url', 'population_vintage', 'income_vintage', 'reviewed_on', 'game_id', 'franchise', 'opponent', 'starts_at', 'venue', 'retrieved_at', 'scenario_id', 'label', 'status', 'event_id', 'season_label', 'source_id'}
     tables = []
     for name, filename in files.items():
         with (ROOT / 'data/processed' / filename).open(newline='') as handle:
@@ -44,6 +50,8 @@ def build():
             'in', '    Typed',
         ]
         table = {'name': name, 'columns': cols, 'partitions': [{'name': name, 'mode': 'import', 'source': {'type': 'm', 'expression': query}}]}
+        if name == 'Attendance':
+            table['measures'] = [{'name': n, 'expression': e, 'formatString': f} for n, e, f in attendance_measures]
         if name == 'Scenarios':
             table['measures'] = [{'name': n, 'expression': e, 'formatString': f} for n, e, f in measures]
         tables.append(table)
@@ -62,7 +70,7 @@ def build():
     save(definition / 'version.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/versionMetadata/1.0.0/schema.json', 'version': '4.0.0'})
     save(definition / 'report.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.0.0/schema.json', 'themeCollection': {'customTheme': {'name': 'NolaPulse_theme', 'type': 'RegisteredResources', 'reportVersionAtImport': {'visual': '2.1.0', 'page': '2.0.0', 'report': '3.0.0'}}}, 'resourcePackages': [{'name': 'RegisteredResources', 'type': 'RegisteredResources', 'items': [{'name': 'NolaPulse_theme', 'path': 'theme.json', 'type': 'CustomTheme'}]}]})
     save(report / 'StaticResources/RegisteredResources/theme.json', json.loads((DEST / 'theme.json').read_text()))
-    save(definition / 'pages/pages.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json', 'pageOrder': ['decision'], 'activePageName': 'decision'})
+    save(definition / 'pages/pages.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json', 'pageOrder': ['attendance', 'decision'], 'activePageName': 'attendance'})
     page = definition / 'pages/decision'
     save(page / 'page.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json', 'name': 'decision', 'displayName': 'NOLA PULSE · Decision economics', 'displayOption': 'FitToPage', 'width': 1280, 'height': 720})
 
@@ -83,8 +91,18 @@ def build():
     visual('curve', 'lineChart', 25, 265, 610, 300, {'Category': [('Curves', 'incremental_share', False)], 'Y': [('Scenarios', 'Curve Net Contribution', True)]}, 'Decision reversal · other inputs held fixed')
     visual('markets', 'tableEx', 660, 265, 595, 300, {'Values': [('Markets', 'name', False), ('Markets', 'population', False), ('Markets', 'population_change_pct', False), ('Markets', 'median_income', False)]}, 'Census context · population 2025 / income ACS 2020–24')
     visual('assumptions', 'tableEx', 25, 585, 1230, 110, {'Values': [('Scenarios', c, False) for c in ['label', 'budget', 'costPerOrder', 'incrementality', 'ticketsPerOrder', 'contributionPerTicket', 'fixedCosts']]}, 'Explicit assumptions · not team campaign results')
-    (DEST / 'measures.dax').write_text('\n\n'.join(f'{n} =\n{e}' for n,e,_ in measures) + '\n')
-    print(f'Generated {len(tables)} model tables, {len(measures)} measures, and 8 report visuals. Desktop verification pending.')
+    page = definition / 'pages/attendance'
+    save(page / 'page.json', {'$schema': 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json', 'name': 'attendance', 'displayName': 'NOLA PULSE · Reported attendance', 'displayOption': 'FitToPage', 'width': 1280, 'height': 720})
+    visual('franchise', 'slicer', 25, 20, 280, 90, {'Values': [('Attendance', 'franchise', False)]}, 'Select one franchise')
+    visual('season', 'slicer', 330, 20, 280, 90, {'Values': [('Attendance', 'season_label', False)]}, 'Select one season · current season is partial')
+    visual('scope', 'card', 635, 20, 620, 90, {'Values': [('Attendance', 'Attendance Scope', True)]}, 'New Orleans regular-season home games')
+    visual('average', 'card', 25, 130, 390, 110, {'Values': [('Attendance', 'Average Home Attendance', True)]}, 'Average reported home attendance')
+    visual('total', 'card', 445, 130, 390, 110, {'Values': [('Attendance', 'Reported Attendance', True)]}, 'Total reported home attendance')
+    visual('dates', 'card', 865, 130, 390, 110, {'Values': [('Attendance', 'Completed Home Dates', True)]}, 'Completed New Orleans home dates')
+    visual('trend', 'lineChart', 25, 265, 720, 430, {'Category': [('Attendance', 'game_number', False)], 'Y': [('Attendance', 'Reported Attendance', True)]}, 'Reported attendance by completed home-game number')
+    visual('ledger', 'tableEx', 770, 265, 485, 430, {'Values': [('Attendance', c, False) for c in ['starts_at', 'opponent', 'attendance', 'source_url']]}, 'Game-level source observations · no revenue inferred')
+    (DEST / 'measures.dax').write_text('\n\n'.join(f'{n} =\n{e}' for n,e,_ in measures + attendance_measures) + '\n')
+    print(f'Generated {len(tables)} model tables, {len(measures) + len(attendance_measures)} measures, and 16 report visuals. Desktop verification pending.')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
+  "name": "average",
+  "position": {
+    "x": 25,
+    "y": 130,
+    "width": 390,
+    "height": 110,
+    "z": 155,
+    "tabOrder": 155
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Attendance"
+                    }
+                  },
+                  "Property": "Average Home Attendance"
+                }
+              },
+              "queryRef": "Attendance.Average Home Attendance",
+              "nativeQueryRef": "Average Home Attendance"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Average reported home attendance'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

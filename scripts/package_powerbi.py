@@ -13,12 +13,13 @@ ROOT = Path(__file__).resolve().parents[1]
 def package(destination):
     subprocess.run(['python3', 'scripts/build_data.py', '--web'], cwd=ROOT, check=True)
     subprocess.run(['node', '--experimental-strip-types', 'web/scripts/export-analytics.mjs'], cwd=ROOT, check=True)
+    subprocess.run(['python3', 'scripts/build_attendance.py'], cwd=ROOT, check=True)
     subprocess.run(['python3', 'scripts/build_powerbi.py'], cwd=ROOT, check=True)
     files = {}
     for path in sorted((ROOT / 'powerbi').rglob('*')):
         if path.is_file() and not any(part.startswith('.') for part in path.relative_to(ROOT / 'powerbi').parts):
             files[path.relative_to(ROOT).as_posix()] = path.read_bytes()
-    for filename in ['market_comparison.csv', 'scenarios.csv', 'curves.csv']:
+    for filename in ['market_comparison.csv', 'scenarios.csv', 'curves.csv', 'attendance_games.csv']:
         files[f'data/processed/{filename}'] = (ROOT / 'data/processed' / filename).read_bytes()
     with (ROOT / 'data/processed/games.csv').open(newline='') as handle:
         reader = csv.DictReader(handle)

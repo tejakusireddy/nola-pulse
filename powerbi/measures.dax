@@ -18,3 +18,15 @@ DIVIDE([Campaign Costs], [Attributed Orders] * SELECTEDVALUE(Scenarios[ticketsPe
 
 Decision =
 IF(NOT HASONEVALUE(Scenarios[scenario_id]), "Select one scenario", IF(SELECTEDVALUE(Scenarios[budget]) = 0, "No active campaign", IF(ABS([Net Contribution]) < 0.000001, "Break-even", IF([Net Contribution] > 0, "Conditional test", "Revise before launch"))))
+
+Attendance Scope =
+IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), SELECTEDVALUE(Attendance[franchise]) & " / " & SELECTEDVALUE(Attendance[season_label]), "Select one franchise and season")
+
+Reported Attendance =
+IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), SUM(Attendance[attendance]), BLANK())
+
+Average Home Attendance =
+IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), AVERAGE(Attendance[attendance]), BLANK())
+
+Completed Home Dates =
+IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), COUNTROWS(Attendance), BLANK())

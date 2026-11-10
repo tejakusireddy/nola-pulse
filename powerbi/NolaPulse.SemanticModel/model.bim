@@ -13,6 +13,122 @@
     ],
     "tables": [
       {
+        "name": "Attendance",
+        "columns": [
+          {
+            "name": "event_id",
+            "dataType": "string",
+            "sourceColumn": "event_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "franchise",
+            "dataType": "string",
+            "sourceColumn": "franchise",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "season",
+            "dataType": "double",
+            "sourceColumn": "season",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "season_label",
+            "dataType": "string",
+            "sourceColumn": "season_label",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "starts_at",
+            "dataType": "string",
+            "sourceColumn": "starts_at",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "opponent",
+            "dataType": "string",
+            "sourceColumn": "opponent",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "venue",
+            "dataType": "string",
+            "sourceColumn": "venue",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "attendance",
+            "dataType": "double",
+            "sourceColumn": "attendance",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "source_id",
+            "dataType": "string",
+            "sourceColumn": "source_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "source_url",
+            "dataType": "string",
+            "sourceColumn": "source_url",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "corrected",
+            "dataType": "double",
+            "sourceColumn": "corrected",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "game_number",
+            "dataType": "double",
+            "sourceColumn": "game_number",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Attendance",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(DataFolder & \"attendance_games.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Typed = Table.TransformColumnTypes(Headers, {{\"event_id\", type text}, {\"franchise\", type text}, {\"season\", type number}, {\"season_label\", type text}, {\"starts_at\", type text}, {\"opponent\", type text}, {\"venue\", type text}, {\"attendance\", type number}, {\"source_id\", type text}, {\"source_url\", type text}, {\"corrected\", type number}, {\"game_number\", type number}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Attendance Scope",
+            "expression": "IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), SELECTEDVALUE(Attendance[franchise]) & \" / \" & SELECTEDVALUE(Attendance[season_label]), \"Select one franchise and season\")",
+            "formatString": ""
+          },
+          {
+            "name": "Reported Attendance",
+            "expression": "IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), SUM(Attendance[attendance]), BLANK())",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Average Home Attendance",
+            "expression": "IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), AVERAGE(Attendance[attendance]), BLANK())",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Completed Home Dates",
+            "expression": "IF(HASONEVALUE(Attendance[franchise]) && HASONEVALUE(Attendance[season]), COUNTROWS(Attendance), BLANK())",
+            "formatString": "#,0"
+          }
+        ]
+      },
+      {
         "name": "Markets",
         "columns": [
           {

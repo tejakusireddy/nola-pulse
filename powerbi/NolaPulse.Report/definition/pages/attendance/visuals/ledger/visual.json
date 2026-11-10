@@ -1,0 +1,102 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
+  "name": "ledger",
+  "position": {
+    "x": 770,
+    "y": 265,
+    "width": 485,
+    "height": 430,
+    "z": 1035,
+    "tabOrder": 1035
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Attendance"
+                    }
+                  },
+                  "Property": "starts_at"
+                }
+              },
+              "queryRef": "Attendance.starts_at",
+              "nativeQueryRef": "starts_at"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Attendance"
+                    }
+                  },
+                  "Property": "opponent"
+                }
+              },
+              "queryRef": "Attendance.opponent",
+              "nativeQueryRef": "opponent"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Attendance"
+                    }
+                  },
+                  "Property": "attendance"
+                }
+              },
+              "queryRef": "Attendance.attendance",
+              "nativeQueryRef": "attendance"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Attendance"
+                    }
+                  },
+                  "Property": "source_url"
+                }
+              },
+              "queryRef": "Attendance.source_url",
+              "nativeQueryRef": "source_url"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Game-level source observations \u00b7 no revenue inferred'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
