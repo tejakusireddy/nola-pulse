@@ -13,6 +13,8 @@ These two game observations are deliberately scoped to one reviewed game per fra
 
 TicketData requires express permission for scraping or redistribution in its [terms](https://www.ticketdata.com/terms). Its quotes are not copied into this product and there is no TicketData scraper. A licensed feed or explicit provider permission would be needed for that integration.
 
+The performance overview additionally uses 109 reviewed ESPN game-level attendance records across three seasons per franchise, with a documented NBA correction and explicit venue/postponement exclusions. See [attendance methodology](ATTENDANCE.md).
+
 ## What closes the remaining commercial gaps
 
 | Decision measure | Authorized aggregate export needed | Why public evidence cannot replace it |

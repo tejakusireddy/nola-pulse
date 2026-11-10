@@ -1,20 +1,23 @@
 # NOLA PULSE
 
-**A commercial decision you can question.** Market intelligence and campaign economics for the New Orleans Saints and Pelicans.
+**Saints and Pelicans market intelligence.** Measured attendance performance, Gulf Coast market context, and campaign planning.
 
-NOLA PULSE connects Gulf Coast market context with upcoming home games and a transparent campaign model. The opening brief answers three questions: what action is being considered, why the evidence is credible, and what would reverse the decision.
+The opening dashboard analyzes 109 reviewed home-game attendance records across three seasons per franchise. It compares equal numbers of home dates, separates partial seasons from completed seasons, and links every game observation to its source. Campaign economics live in a separate simulator that requires user inputs.
 
 ## Working experience
 
 - Full Pelicans and Saints editions: hover or focus to preview; select to keep the franchise, typography, and game context.
-- Searchable library of 34 defined commercial measures, separating observed facts, calculations, assumptions, and missing connections.
+- Three-season attendance totals, average crowds, matched prior-season change, game-level trend, crowd range, weekday/weekend groups, and opponent history.
+- Searchable library of defined commercial measures, separating observed facts, calculations, assumptions, and missing connections.
 - Supporting public game context for both franchises, with provider attribution, last-checked times, and stale/unavailable states.
 - Upcoming New Orleans home schedules refreshed from the official team websites.
 - A large Census-backed county map with population and income layers, selectable markets, pan, zoom, and a sortable comparison table.
 - A dedicated simulator with editable assumptions, pinned scenario comparison, calculated break-even thresholds, sensitivity ranking, and combined downside stress.
-- Authentic venue photographs with source and license credits, supporting each franchise’s commercial context.
-- A JSON decision brief and a printable PDF view preserving current and pinned assumptions, exact deltas, and source references.
+- Verified team logos, colors and licensed website fonts. Licensed venue photographs are retained with source credits.
+- Overview JSON and observation CSV exports preserving actual data, calculation scope, and source references; separate simulator briefs retain campaign inputs and reversal tests.
 - Reproducible Python/SQL data preparation and a native Power BI project source with matching design tokens.
+
+Attendance sources, correction and exclusion rules, and comparison definitions are documented in [Attendance evidence](docs/ATTENDANCE.md).
 
 The campaign outputs are conditional scenarios. Demographics are observed facts; acquisition cost, incrementality, and contribution margins are explicit assumptions. A market profile does not establish fan penetration or marketing performance.
 
@@ -34,6 +37,7 @@ Use the local URL printed by Vite. The application ships with its reviewed resea
 ```sh
 python3 scripts/build_data.py --web
 node --experimental-strip-types web/scripts/export-analytics.mjs
+python3 scripts/build_attendance.py
 python3 scripts/build_powerbi.py
 ```
 

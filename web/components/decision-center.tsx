@@ -4,11 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import LiveContext from "./live-context";
 import FranchiseSwitch, { useSelectedFranchise } from "./franchise-switch";
 import RegionalMap from "./regional-map";
-import VenueContext from "./venue-context";
+import FranchiseAnalytics from "./franchise-analytics";
+import attendance from "../data/attendance.json";
+import {
+  historicalOpponent,
+  seasonAnalysis,
+  seasonOptions,
+} from "../lib/attendance";
 import ScenarioComparison from "./scenario-comparison";
 import ScenarioSetup from "./scenario-setup";
 import PublicTeamEvidence from "./public-team-evidence";
-import franchiseEvidence from "../data/franchise-evidence.json";
 import type { Franchise } from "./franchise-switch";
 import MetricLibrary from "./metric-library";
 import saintsSchedule from "../data/saints-schedule.json";
@@ -16,7 +21,6 @@ import type { ScheduleGame } from "../lib/live-normalize";
 import {
   Activity,
   ArrowRight,
-  ArrowUpRight,
   BarChart3,
   Check,
   ChevronDown,
@@ -45,14 +49,7 @@ import {
 import type { Scenario } from "../lib/scenario";
 import { assertEvidence, createBrief, download } from "../lib/brief";
 import type { Game, Market } from "../lib/brief";
-import {
-  gameDate,
-  gameTime,
-  integer,
-  money,
-  percent,
-  signed,
-} from "../lib/format";
+import { gameDate, integer, money, percent, signed } from "../lib/format";
 
 type View = "decision" | "markets" | "simulator" | "metrics" | "evidence";
 const INITIAL_GAME = intelligence.games[0];
@@ -188,7 +185,7 @@ function Sources({
       <div className="section-heading">
         <div>
           <span className="eyebrow">EVIDENCE & METHODS</span>
-          <h2>Every number has a trail.</h2>
+          <h2>Sources and methodology.</h2>
         </div>
         <ShieldCheck size={26} />
       </div>
@@ -338,11 +335,17 @@ export default function DecisionCenter() {
     "population" | "median_income" | "population_change_pct"
   >("population_change_pct");
   const exportRef = useRef<HTMLDivElement>(null);
-  const observation = franchiseEvidence[activeFranchise];
-  const scheduleUrl =
-    activeFranchise === "Pelicans"
-      ? "https://www.nba.com/pelicans/schedule"
-      : "https://www.neworleanssaints.com/schedule/";
+  const [attendanceSeasons, setAttendanceSeasons] = useState<
+    Record<Franchise, number>
+  >({
+    Pelicans: seasonOptions("Pelicans")[0].season,
+    Saints: seasonOptions("Saints")[0].season,
+  });
+  const attendanceSeason = attendanceSeasons[activeFranchise];
+  const nextHomeGame =
+    [...franchiseGames].sort((a, b) =>
+      a.starts_at.localeCompare(b.starts_at),
+    )[0] ?? game;
   const result = evaluate(scenario);
   const risks = sensitivity(scenario);
   const stress = combinedDownside(scenario);
@@ -404,8 +407,17 @@ export default function DecisionCenter() {
         : {
             title: `${activeFranchise} market brief`,
             exported_at: new Date().toISOString(),
-            public_team_observation: observation,
-            selected_game: game,
+            attendance_analysis: seasonAnalysis(
+              activeFranchise,
+              attendanceSeason,
+            ),
+            attendance_sources: attendance.sources,
+            attendance_as_of: attendance.as_of,
+            selected_game: view === "decision" ? nextHomeGame : game,
+            next_opponent_history: historicalOpponent(
+              activeFranchise,
+              nextHomeGame.opponent,
+            ),
             published_home_fixtures: franchiseGames,
             market,
             scope:
@@ -528,7 +540,7 @@ export default function DecisionCenter() {
               </h1>
               <p>
                 {view === "decision"
-                  ? "Home fixtures, published attendance, and regional context."
+                  ? "Attendance performance, historical comparisons, and the New Orleans market."
                   : view === "markets"
                     ? "Compare regional context before making a commercial commitment."
                     : view === "simulator"
@@ -590,6 +602,21 @@ export default function DecisionCenter() {
               scenario={scenario}
               franchise={activeFranchise}
               scenarioReady={scenarioReady}
+              attendanceSeason={attendanceSeason}
+            />
+          ) : view === "decision" ? (
+            <FranchiseAnalytics
+              franchise={activeFranchise}
+              season={attendanceSeason}
+              onSeasonChange={(season) =>
+                setAttendanceSeasons((previous) => ({
+                  ...previous,
+                  [activeFranchise]: season,
+                }))
+              }
+              market={market}
+              onMarketChange={setMarket}
+              nextGame={nextHomeGame}
             />
           ) : (
             <>
@@ -673,7 +700,7 @@ export default function DecisionCenter() {
                         <span className="eyebrow">
                           02 / UNDER WHAT CONDITIONS
                         </span>
-                        <h2>The assumption is the decision.</h2>
+                        <h2>Campaign inputs</h2>
                         <p>
                           Move an input. Watch the recommendation and reversal
                           point change together.
@@ -742,7 +769,7 @@ export default function DecisionCenter() {
                             <span className="eyebrow">
                               DECISION REVERSAL TEST
                             </span>
-                            <h3>Know where the case breaks.</h3>
+                            <h3>Break-even threshold</h3>
                           </div>
                           <Tag kind="Derived" />
                         </div>
@@ -833,7 +860,7 @@ export default function DecisionCenter() {
                         <span className="eyebrow">
                           03 / WHAT TO LEARN FIRST
                         </span>
-                        <h2>Which uncertainty can hurt the most?</h2>
+                        <h2>Sensitivity to campaign inputs</h2>
                       </div>
                       <span className="small-note">
                         Exploratory bounds · not confidence intervals
@@ -898,7 +925,7 @@ export default function DecisionCenter() {
                       <span className="eyebrow">
                         FROM RECOMMENDATION TO MEASUREMENT
                       </span>
-                      <h2>Make the next dollar accountable.</h2>
+                      <h2>Campaign measurement plan</h2>
                       <p>
                         Validate primary inventory and margins. Design a
                         holdout. Measure incremental contribution before
@@ -962,153 +989,52 @@ export default function DecisionCenter() {
                 </div>
               ) : (
                 <>
-                  <section
-                    className="mobile-brief"
-                    aria-label="Selected franchise game"
-                  >
-                    <span className="eyebrow">
-                      {activeFranchise.toUpperCase()} / HOME CALENDAR
-                    </span>
-                    <h2>vs. {game.opponent}</h2>
-                    <div>
-                      <strong>
-                        {gameDate(game.starts_at)}
-                        <small>{gameTime(game.starts_at)}</small>
-                      </strong>
-                      <p>{game.venue}</p>
-                    </div>
-                    <a
-                      className="text-link"
-                      href={scheduleUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Official schedule <ArrowUpRight size={14} />
-                    </a>
-                  </section>
                   <div className="intelligence-workspace">
                     <RegionalMap selected={market} onSelect={setMarket} />
-                    <aside
-                      className="decision-dock"
-                      aria-label="Executive decision brief"
-                    >
-                      <section
-                        className="decision-hero"
-                        aria-labelledby="recommendation-title"
-                      >
-                        <div className="hero-main">
-                          <div className="hero-topline">
-                            <span className="hero-kicker">
-                              <Target size={14} /> HOME CALENDAR
-                            </span>
-                            <span className="hero-status">
-                              {activeFranchise.toUpperCase()}
-                            </span>
-                          </div>
-                          <h2 id="recommendation-title">vs. {game.opponent}</h2>
-                          <p>
-                            {gameDate(game.starts_at)} ·{" "}
-                            {gameTime(game.starts_at)}
-                          </p>
-                          <div className="hero-footer">
-                            <span>{game.venue}</span>
-                            <a
-                              href={scheduleUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              Official schedule <ArrowUpRight size={14} />
-                            </a>
-                          </div>
+                    <aside className="panel regional-profile">
+                      <span className="eyebrow">
+                        {market.name.toUpperCase()}
+                      </span>
+                      <h2>{integer(market.households)} households</h2>
+                      <dl>
+                        <div>
+                          <dt>Median household income</dt>
+                          <dd>{money(market.median_income)}</dd>
                         </div>
-                        <div className="hero-economics">
-                          <span className="hero-metric-label">
-                            {observation.label.toUpperCase()}
-                          </span>
-                          <strong className="hero-metric">
-                            {integer(observation.value)}
-                          </strong>
-                          <span className="hero-metric-note">
-                            vs. {observation.opponent} · {observation.game_date}
-                          </span>
-                          <div className="hero-rule" />
-                          <div className="reversal-preview">
-                            <span>REVIEWED HOME GAME</span>
-                            <p>{observation.venue}</p>
-                            <a
-                              className="text-link"
-                              href={observation.source_url}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              {observation.source_name}{" "}
-                              <ArrowUpRight size={14} />
-                            </a>
-                          </div>
-                          <details className="attendance-definition">
-                            <summary>Definition & coverage</summary>
-                            <p>
-                              {observation.definition} {observation.coverage}
-                            </p>
-                          </details>
+                        <div>
+                          <dt>Income vs. Orleans</dt>
+                          <dd>
+                            {signed(
+                              market.income_difference_vs_orleans_pct,
+                              "%",
+                            )}
+                          </dd>
                         </div>
-                      </section>
-                      <VenueContext game={game} />
-                    </aside>
-                  </div>
-                  <section
-                    className="panel home-calendar"
-                    aria-label={`${activeFranchise} published home fixtures`}
-                  >
-                    <div className="panel-heading">
-                      <div>
-                        <span className="eyebrow">
-                          {activeFranchise.toUpperCase()} / PUBLISHED FIXTURES
-                        </span>
-                        <h2>Home calendar</h2>
-                      </div>
+                        <div>
+                          <dt>Population change</dt>
+                          <dd>{signed(market.population_change_pct, "%")}</dd>
+                        </div>
+                      </dl>
                       <a
                         className="text-link"
-                        href={scheduleUrl}
+                        href={market.source_url}
                         target="_blank"
                         rel="noreferrer"
                       >
-                        Full schedule <ArrowUpRight size={14} />
+                        Census source <ExternalLink size={14} />
                       </a>
-                    </div>
-                    <div className="home-fixtures">
-                      {[...franchiseGames]
-                        .sort((a, b) => a.starts_at.localeCompare(b.starts_at))
-                        .slice(0, 4)
-                        .map((fixture) => (
-                          <button
-                            key={fixture.game_id}
-                            className={
-                              game.game_id === fixture.game_id
-                                ? "home-fixture selected"
-                                : "home-fixture"
-                            }
-                            onClick={() => setGame(fixture)}
-                          >
-                            <span>{gameDate(fixture.starts_at)}</span>
-                            <strong>vs. {fixture.opponent}</strong>
-                            <small>
-                              {gameTime(fixture.starts_at)} · {fixture.venue}
-                            </small>
-                          </button>
-                        ))}
-                    </div>
-                    <small className="muted">
-                      Published schedule · checked {gameDate(game.retrieved_at)}
-                      . Times shown in New Orleans time.
-                    </small>
-                  </section>
+                      <p>
+                        Regional figures describe residents. Household counts
+                        are not measured franchise customers.
+                      </p>
+                    </aside>
+                  </div>
                   {view === "markets" && (
                     <section className="panel comparison-table">
                       <div className="panel-heading">
                         <div>
                           <span className="eyebrow">COMPARE THE CONTEXT</span>
-                          <h2>Six markets. No invented opportunity score.</h2>
+                          <h2>Regional market comparison</h2>
                         </div>
                         <label className="sort-control">
                           Sort by{" "}
@@ -1207,8 +1133,8 @@ export default function DecisionCenter() {
           <footer className="footer">
             <span>
               <Activity size={15} />
-              NOLA PULSE <span className="footer-divider">/</span> Evidence
-              before conviction.
+              NOLA PULSE <span className="footer-divider">/</span> New Orleans
+              market intelligence.
             </span>
             <span>
               Independent prototype · No team affiliation or endorsement.

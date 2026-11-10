@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ArrowUpRight, ChevronDown, Database, Search } from "lucide-react";
+import { seasonAnalysis, seasonOptions } from "../lib/attendance";
 import franchiseEvidence from "../data/franchise-evidence.json";
 import type { Market } from "../lib/brief";
 import { ASSUMPTIONS, evaluate } from "../lib/scenario";
@@ -23,11 +24,13 @@ export default function MetricLibrary({
   scenario,
   franchise,
   scenarioReady = false,
+  attendanceSeason,
 }: {
   market: Market;
   scenario: Scenario;
   franchise: string;
   scenarioReady?: boolean;
+  attendanceSeason?: number;
 }) {
   const [filter, setFilter] = useState("All measures");
   const [query, setQuery] = useState("");
@@ -36,7 +39,54 @@ export default function MetricLibrary({
     "lib/scenario.ts · evaluate() · model 1.0.0. Derived from the six editable assumptions; not measured performance.";
   const observation =
     franchiseEvidence[franchise as keyof typeof franchiseEvidence];
+  const attendanceAnalysis = seasonAnalysis(
+    franchise,
+    attendanceSeason ?? seasonOptions(franchise)[0].season,
+  );
   const catalog: Metric[] = [
+    ...[
+      [
+        "Average home attendance",
+        integer(attendanceAnalysis.rollup.average_attendance),
+        "SUM(attendance) ÷ COUNT(completed New Orleans home games).",
+      ],
+      [
+        "Total home attendance",
+        integer(attendanceAnalysis.rollup.total_attendance),
+        "SUM(published attendance) for the selected season's completed New Orleans home dates.",
+      ],
+      [
+        "Matched prior-season attendance change",
+        attendanceAnalysis.change === null
+          ? "No prior baseline"
+          : `${attendanceAnalysis.change >= 0 ? "+" : ""}${percent(attendanceAnalysis.change, 2)}`,
+        "Mean of first N current home dates ÷ mean of first N prior home dates − 1. N is the smaller available count.",
+      ],
+      [
+        "Completed New Orleans home dates",
+        integer(attendanceAnalysis.games.length),
+        "Count of completed regular-season home games in New Orleans; neutral venues and postponed placeholders excluded.",
+      ],
+      [
+        "Largest reported crowd",
+        integer(attendanceAnalysis.highest.attendance),
+        `Maximum attendance in the selected season. ${attendanceAnalysis.highest.opponent}.`,
+      ],
+      [
+        "Smallest reported crowd",
+        integer(attendanceAnalysis.lowest.attendance),
+        `Minimum attendance in the selected season. ${attendanceAnalysis.lowest.opponent}.`,
+      ],
+    ].map(([name, value, definition]) => ({
+      name,
+      value,
+      definition,
+      kind: "Derived" as const,
+      category: "Team context",
+      source: `ESPN game records + documented NBA correction · SQL attendance_seasons · ${attendanceAnalysis.rollup.season_label}`,
+      url: attendanceAnalysis.latest.source_url,
+      use: "Evaluate attendance performance; this does not measure revenue, customer identity, or campaign lift.",
+    })),
     {
       name: observation.label,
       value: integer(observation.value),

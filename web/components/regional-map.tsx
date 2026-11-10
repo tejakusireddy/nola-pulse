@@ -76,7 +76,7 @@ export default function RegionalMap({
       <header className="explorer-heading">
         <div>
           <span className="eyebrow">MARKET INTELLIGENCE / GULF COAST</span>
-          <h2 id="regional-map-title">Where the next opportunity begins.</h2>
+          <h2 id="regional-map-title">Gulf Coast markets</h2>
         </div>
         <span className="tag tag-observed">Census evidence</span>
       </header>

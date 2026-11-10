@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./workspace.css";
+import "./performance.css";
 
 export const metadata: Metadata = {
-  title: "NOLA PULSE | Campaign Decision Intelligence",
+  title: "NOLA PULSE | Saints + Pelicans Market Intelligence",
   description:
-    "Trace the opportunity. Test the economics. Know what changes the decision. Independent Saints and Pelicans market intelligence prototype.",
+    "Saints and Pelicans attendance performance, historical comparisons, Gulf Coast market context, and campaign planning. Independent portfolio demonstration.",
   icons: { icon: "/favicon.svg" },
 };
 
