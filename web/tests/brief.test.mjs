@@ -53,3 +53,22 @@ test("Saints source and identity survive export without inheriting a Pelicans la
   assert.equal(brief.game.venue, saints.venue);
   assert.equal(brief.game.starts_at, saints.starts_at);
 });
+
+test("pinned comparisons preserve assumptions and exact scenario deltas in the exported brief", () => {
+  const pinned = { ...DEFAULT_SCENARIO };
+  const current = { ...pinned, incrementality: 0.4 };
+  const brief = createBrief(market, game, current, pinned);
+  assert.equal(brief.comparison.kind, "Assumed");
+  assert.equal(brief.comparison.derived.netContribution, 1500);
+  assert.equal(brief.comparison.delta.net_contribution, -3000);
+  assert.equal(brief.comparison.delta.incremental_tickets, -93.75);
+  assert.equal(brief.comparison.delta.incrementality_threshold, 0);
+  pinned.budget = 0;
+  assert.equal(
+    brief.comparison.inputs.find((i) => i.key === "budget").value,
+    6000,
+  );
+  assert.throws(() =>
+    createBrief(market, game, current, { ...current, incrementality: 2 }),
+  );
+});

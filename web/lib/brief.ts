@@ -31,10 +31,16 @@ export function assertEvidence(market: Market, game: Game) {
   }
 }
 
-export function createBrief(market: Market, game: Game, scenario: Scenario) {
+export function createBrief(
+  market: Market,
+  game: Game,
+  scenario: Scenario,
+  comparison?: Scenario,
+) {
   assertEvidence(market, game);
   const result = evaluate(scenario);
   const threshold = result.breakEvenShare;
+  const comparisonResult = comparison ? evaluate(comparison) : null;
   const recommendation =
     result.status === "positive"
       ? "Prepare a bounded test, conditional on validating acquisition cost, incrementality, and available primary inventory."
@@ -65,6 +71,34 @@ export function createBrief(market: Market, game: Game, scenario: Scenario) {
       source_id: "scenario",
       formula: "N = (B / C) × i × T × M − B − F",
     },
+    comparison:
+      comparison && comparisonResult
+        ? {
+            kind: "Assumed",
+            source_id: "scenario",
+            origin: "Pinned user-editable assumptions, not a measured baseline",
+            inputs: ASSUMPTIONS.map((a) => ({
+              key: a.key,
+              value: comparison[a.key],
+              unit: a.unit,
+              kind: "Assumed",
+              source_id: "scenario",
+            })),
+            derived: comparisonResult,
+            delta: {
+              net_contribution:
+                result.netContribution - comparisonResult.netContribution,
+              incremental_tickets:
+                result.incrementalTickets - comparisonResult.incrementalTickets,
+              incrementality_threshold:
+                threshold === null || comparisonResult.breakEvenShare === null
+                  ? null
+                  : threshold - comparisonResult.breakEvenShare,
+            },
+            transformation:
+              "Current scenario minus pinned comparison; identical evaluate() model for both cases. Threshold delta is a share, not a percent change.",
+          }
+        : null,
     reversal: {
       incrementality_threshold: threshold,
       feasible: result.feasible,
